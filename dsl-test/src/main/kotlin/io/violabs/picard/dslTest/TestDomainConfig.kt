@@ -1,6 +1,7 @@
 package io.violabs.picard.dslTest
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.squareup.kotlinpoet.ClassName
 import io.violabs.picard.metaDsl.config.BuilderConfig
 import io.violabs.picard.metaDsl.config.DomainConfig
 
@@ -13,5 +14,6 @@ class TestDomainConfig(
     singleEntryTransformByClassName,
     domain
 ) {
-    val testDslBuildFilePostfix: String = "DslBuilderTest"
+    val testClassName = ClassName(packageName, "${builderClassName.simpleName}Test")
+    override val fileClassName: ClassName = testClassName
 }

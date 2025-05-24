@@ -34,19 +34,12 @@ pluginManagement {
 //}
 
 includeModules(
-    "cmd",
     "common",
-    "core",
     "core-test",
     "dsl",
     "dsl-test",
     "meta-dsl",
-    "generate-test",
-    "sandbox",
-    "star-charts".subModules(
-        "loki"
-    ),
-    "tutorial"
+    "generate-test"
 )
 
 class Module(private val moduleName: String) {

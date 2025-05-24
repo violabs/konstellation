@@ -7,8 +7,8 @@ import com.squareup.kotlinpoet.TypeSpec
 
 class KPFileSpecBuilder {
     var className: ClassName? = null
-    private var types = mutableListOf<TypeSpec>()
     private var imports = mutableListOf<Pair<String, String>>()
+    private var types = mutableListOf<TypeSpec>()
     private var functions = mutableListOf<FunSpec>()
 
     fun types(block: KPTypeSpecBuilder.Group.() -> Unit) {
@@ -25,6 +25,14 @@ class KPFileSpecBuilder {
         this.types = specs.toMutableList()
     }
 
+    fun addImport(className: ClassName) {
+        imports.add(className.packageName to className.simpleName)
+    }
+
+    fun addImport(classNamePair: Pair<String, String>) {
+        imports.add(classNamePair)
+    }
+
     fun addImport(packageName: String, methodName: String) {
         imports.add(packageName to methodName)
     }
@@ -36,9 +44,15 @@ class KPFileSpecBuilder {
         val className = requireNotNull(className) { "File - Class name must be set" }
         var spec = FileSpec
             .builder(className)
-            .addTypes(types)
             .indent("    ")
-            .addFunctions(functions)
+
+        for (type in types) {
+            spec = spec.addType(type)
+        }
+
+        for (function in functions) {
+            spec = spec.addFunction(function)
+        }
 
         for (import in imports) {
             spec = spec.addImport(import.first, import.second)

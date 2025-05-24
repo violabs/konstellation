@@ -6,7 +6,7 @@ import com.squareup.kotlinpoet.*
 class KPTypeSpecBuilder : DefaultKotlinPoetSpec() {
     private var superInterface: TypeName? = null
     private var typeVariables: MutableList<TypeVariableName> = mutableListOf()
-    private val annotationNames: MutableList<ClassName> = mutableListOf()
+    private var annotationNames: MutableList<ClassName> = mutableListOf()
     private var properties: MutableList<PropertySpec> = mutableListOf()
     private var functions: MutableList<FunSpec> = mutableListOf()
     private var nested: MutableList<TypeSpec> = mutableListOf()
@@ -16,8 +16,8 @@ class KPTypeSpecBuilder : DefaultKotlinPoetSpec() {
         annotationNames.add(ClassName(packageName, annotationSimpleName))
     }
 
-    fun annotation(provider: () -> ClassName?) {
-        provider()?.let { annotationNames.add(it) }
+    fun annotations(block: AnnotationGroup.() -> Unit) {
+        this.annotationNames = AnnotationGroup().apply(block).annotationNames
     }
 
     fun superInterface(superInterface: TypeName) {

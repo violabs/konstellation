@@ -71,8 +71,10 @@ abstract class GroupGenerator<T>(
                 typeVariable?.let {
                     typeVariables(it)
                 }
-                annotation {
-                    annotationDecorator.createDslMarkerIfAvailable(domainConfig.builderConfig.dslMarkerClass)
+                annotations {
+                    annotationDecorator
+                        .createDslMarkerIfAvailable(domainConfig.builderConfig.dslMarkerClass)
+                        ?.also { annotation(it) }
                 }
                 properties {
                     add {

@@ -3,10 +3,6 @@ package io.violabs.picard.metaDsl.builder
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 
-abstract class DefaultParamSpecEnabled : ParamSpecEnabled {
-    override var params: MutableList<ParameterSpec> = mutableListOf()
-}
-
 interface ParamSpecEnabled {
     var params: MutableList<ParameterSpec>
 

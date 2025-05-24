@@ -7,6 +7,7 @@ import com.squareup.kotlinpoet.LIST
 import com.squareup.kotlinpoet.MAP
 import com.squareup.kotlinpoet.MUTABLE_LIST
 import com.squareup.kotlinpoet.MUTABLE_MAP
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
@@ -29,7 +30,9 @@ fun kpListOf(type: TypeName, nullable: Boolean = true): TypeName =
 fun kpMutableListOf(type: TypeName, nullable: Boolean = true): TypeName =
     MUTABLE_LIST.parameterizedBy(type).copy(nullable = nullable)
 
-class KotlinPoetBuilder : DefaultParamSpecEnabled() {
+class KotlinPoetBuilder : ParamSpecEnabled {
+    override var params: MutableList<ParameterSpec> = mutableListOf()
+
     fun ClassName.nestedClass(
         extensionName: String,
         nestedClassName: String? = null
@@ -69,6 +72,15 @@ class KotlinPoetBuilder : DefaultParamSpecEnabled() {
         return KPFunSpecBuilder.Group().apply(block).items
     }
 
+    /**
+     * Available methods:
+     * - [KPTypeSpecBuilder.annotation]
+     * - [KPTypeSpecBuilder.superInterface]
+     * - [KPTypeSpecBuilder.typeVariables]
+     * - [KPTypeSpecBuilder.properties]
+     * - [KPTypeSpecBuilder.functions]
+     * - [KPTypeSpecBuilder.nested]
+     */
     fun type(block: KPTypeSpecBuilder.() -> Unit): TypeSpec {
         return KPTypeSpecBuilder().apply(block).build()
     }

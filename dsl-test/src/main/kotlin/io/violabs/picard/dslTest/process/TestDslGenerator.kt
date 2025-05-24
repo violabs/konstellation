@@ -1,4 +1,4 @@
-package io.violabs.picard.dsl.process
+package io.violabs.picard.dslTest.process
 
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Resolver
@@ -17,20 +17,19 @@ import io.violabs.picard.metaDsl.process.PropertySchemaFactory
 import io.violabs.picard.metaDsl.process.PropertySchemaFactoryAdapter
 import kotlin.reflect.KClass
 
-interface DslGenerator<PARAM_ADAPTER : PropertySchemaFactoryAdapter, PROP_ADAPTER : DomainProperty> : VLoggable {
+interface TestDslGenerator<PARAM_ADAPTER : PropertySchemaFactoryAdapter, PROP_ADAPTER : DomainProperty> : VLoggable {
+    override fun logId(): String? = TestDslGenerator::class.simpleName
+
     val propertySchemaFactory: PropertySchemaFactory<PARAM_ADAPTER, PROP_ADAPTER>
-    val builderGenerator: BuilderGenerator
-    val rootDslAccessorGenerator: RootDslAccessorGenerator
-    override fun logId(): String? = DslGenerator::class.simpleName
+    val testGenerator: TestGenerator
 
     fun generate(resolver: Resolver, codeGenerator: CodeGenerator, options: Map<String, String?> = emptyMap())
 }
 
 class DefaultDslGenerator(
     override val propertySchemaFactory: DefaultPropertySchemaFactory = DefaultPropertySchemaFactory(),
-    override val builderGenerator: DefaultBuilderGenerator = DefaultBuilderGenerator(),
-    override val rootDslAccessorGenerator: DefaultRootDslAccessorGenerator = DefaultRootDslAccessorGenerator()
-) : DslGenerator<DefaultPropertySchemaFactoryAdapter, DefaultDomainProperty> {
+    override val testGenerator: DefaultTestGenerator = DefaultTestGenerator()
+) : TestDslGenerator<DefaultPropertySchemaFactoryAdapter, DefaultDomainProperty> {
     init {
         logger.enableDebug()
     }
@@ -54,40 +53,21 @@ class DefaultDslGenerator(
      * - **dslMarkerClass** ~required~ the class that contains a [DslMarker] to denote the host dsl name.
      */
     override fun generate(resolver: Resolver, codeGenerator: CodeGenerator, options: Map<String, String?>) {
+        logger.debug("------- GENERATE", tier = 0)
         val builderConfig = BuilderConfig(options, logger)
 
-        if (builderConfig.isIgnored) {
-            logger.warn(
-                "------------------------ [SKIP] GENERATE for project: ${builderConfig.projectRootClasspath}",
-                tier = 0
-            )
-            return
-        }
-
-        logger.debug("------------------------ GENERATE for project: ${builderConfig.projectRootClasspath}", tier = 0)
-        builderConfig.printDebug()
-
         val generatedBuilderDSL = getGeneratedDslAnnotation(resolver)
+        logger.debug("num found: ${generatedBuilderDSL.count()}", tier = 1, branch = true)
 
         val singleEntryTransformByClassName: Map<String, KSClassDeclaration> =
             getSingleEntryTransformByClassName(resolver)
 
         generatedBuilderDSL.forEach { domain ->
-            builderGenerator.generate(codeGenerator, domain, builderConfig, singleEntryTransformByClassName)
+            testGenerator.generate(codeGenerator, domain, builderConfig, singleEntryTransformByClassName)
         }
-
-        val rootClasses = generatedBuilderDSL
-            .filter { it.isRootDsl() }
-            .toList()
-
-        if (rootClasses.isEmpty()) {
-            logger.debug("No root classes found.")
-            return
-        }
-        rootDslAccessorGenerator.generate(codeGenerator, rootClasses, builderConfig)
     }
 
-    private fun getGeneratedDslAnnotation(resolver: Resolver): List<KSClassDeclaration> {
+    private fun getGeneratedDslAnnotation(resolver: Resolver): Sequence<KSClassDeclaration> {
         return getClassDeclarationByAnnotation(resolver, GeneratedDsl::class)
     }
 
@@ -96,22 +76,10 @@ class DefaultDslGenerator(
             .associateBy { it.toClassName().toString() }
     }
 
-    private fun getClassDeclarationByAnnotation(resolver: Resolver, klass: KClass<*>): List<KSClassDeclaration> {
+    private fun getClassDeclarationByAnnotation(resolver: Resolver, klass: KClass<*>): Sequence<KSClassDeclaration> {
         return resolver
             .getSymbolsWithAnnotation(klass.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
             .onEach { logger.debug("Found ${Colors.yellow("@${klass.simpleName}")} on ${it.simpleName.asString()}") }
-            .toList()
     }
-
-    private fun KSClassDeclaration.isRootDsl(): Boolean = this
-        .annotations
-        .filter { it.shortName.asString() == GeneratedDsl::class.simpleName }
-        .any { annotation ->
-            annotation
-                .arguments
-                .firstOrNull { it.name?.asString() == GeneratedDsl::isRoot.name }
-                ?.value == true
-        }
 }
-

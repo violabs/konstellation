@@ -21,6 +21,6 @@ open class DomainConfig(
     val dslBuilderInterface = ClassName(builderConfig.dslBuilderClasspath, dslBuilderPostfix)
     val parameterizedDslBuilder = dslBuilderInterface.parameterizedBy(domainClassName)
 
-    val fileClassName = ClassName(packageName, "${typeName}$dslBuildFilePostfix")
+    open val fileClassName = ClassName(packageName, "${typeName}$dslBuildFilePostfix")
     val dependencies = Dependencies(aggregating = false, sources = listOfNotNull(domain.containingFile).toTypedArray())
 }

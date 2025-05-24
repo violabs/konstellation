@@ -36,7 +36,7 @@ class DefaultTestGenerator(
 
 
     private fun generateFilesForDsl(
-        domainConfig: DomainConfig,
+        domainConfig: TestDomainConfig,
         codeGenerator: CodeGenerator
     ) {
         logger.debug("-- generating tests for builder --", tier = 0)
@@ -63,12 +63,12 @@ class DefaultTestGenerator(
     }
 
 
-    private fun generateTestFileContent(domainConfig: DomainConfig, schemas: List<DslPropSchema>): TypeSpec =
+    private fun generateTestFileContent(domainConfig: TestDomainConfig, schemas: List<DslPropSchema>): TypeSpec =
         kotlinPoet {
             val domainClassName = domainConfig.domainClassName
 
             type {
-                name = domainConfig.builderName
+                name = domainConfig.testClassName.simpleName
             }
         }
 }

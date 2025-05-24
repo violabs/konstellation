@@ -90,7 +90,11 @@ class DefaultBuilderGenerator(
         val domainClassName = domainConfig.domainClassName
 
         type {
-            annotation { annotationDecorator.createDslMarkerIfAvailable(domainConfig.builderConfig.dslMarkerClass) }
+            annotations {
+                annotationDecorator
+                    .createDslMarkerIfAvailable(domainConfig.builderConfig.dslMarkerClass)
+                    ?.also { annotation(it) }
+            }
             public()
             name = domainConfig.builderName
             superInterface(domainConfig.parameterizedDslBuilder)
