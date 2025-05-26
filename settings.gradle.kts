@@ -19,8 +19,8 @@ pluginManagement {
 //            ":dsl",
 //            ":star-charts:loki"
 //        )
-//        excludesAnnotatedBy.add("io.violabs.picard.common.ExcludeFromCoverage")
-////        excludedClasses.add("io.violabs.picard.domain.api.view.*")
+//        excludesAnnotatedBy.add("io.violabs.konstellation.common.ExcludeFromCoverage")
+////        excludedClasses.add("io.violabs.konstellation.domain.api.view.*")
 //        verify {
 //            rule("Minimum Line Coverage") {
 //                bound {
@@ -34,10 +34,8 @@ pluginManagement {
 //}
 
 includeModules(
-    "common",
     "core-test",
     "dsl",
-    "dsl-test",
     "meta-dsl",
     "generate-test"
 )

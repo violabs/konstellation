@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 
-group = "io.violabs.picard"
+group = "io.violabs.konstellation"
 version = "0.0.1"
 
 tasks.jar {
@@ -16,7 +16,7 @@ publishing {
     publications {
         create<MavenPublication>("local") {
             from(components["java"])
-            groupId    = "io.violabs.picard"
+            groupId    = "io.violabs.konstellation"
             artifactId = "common"
             version    = version
         }

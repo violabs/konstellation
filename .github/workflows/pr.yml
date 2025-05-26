@@ -1,4 +1,4 @@
-name: Module PR Tests
+name: Konstellation Module PR Tests
 run-name: PR Tests for modules by ${{ github.actor }}
 
 on:

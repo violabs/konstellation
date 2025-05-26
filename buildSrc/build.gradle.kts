@@ -31,7 +31,7 @@ gradlePlugin {
     plugins {
         create("pipeline") {
             id = "io.violabs.plugins.pipeline"
-            implementationClass = "io.violabs.picard.plugins.pipeline.PipelinePlugin"
+            implementationClass = "io.violabs.konstellation.plugins.pipeline.PipelinePlugin"
         }
     }
 }

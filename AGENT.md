@@ -4,7 +4,7 @@
 - Build: `./gradlew build`
 - Test all: `./gradlew test`
 - Single module test: `./gradlew :core:test`
-- Single test class: `./gradlew :core:test --tests "io.violabs.picard.domain.SomeTest"`
+- Single test class: `./gradlew :core:test --tests "io.violabs.konstellation.domain.SomeTest"`
 - Coverage: `./gradlew koverHtmlReport` or `./gradlew :core:test koverHtmlReport -Pkover`
 
 ## Code Style & Conventions

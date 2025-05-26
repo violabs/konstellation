@@ -12,7 +12,6 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":common"))
     implementation(project(":meta-dsl"))
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -25,9 +24,7 @@ dependencies {
 }
 
 tasks.jar {
-    archiveBaseName.set("konstellation-dsl")
-    from(project(":common").sourceSets.main.get().output)
-    from(project(":meta-dsl").sourceSets.main.get().output)
+    archiveBaseName.set("dsl")
 }
 
 publishing {
@@ -35,7 +32,7 @@ publishing {
         create<MavenPublication>("local") {
             from(components["java"])
             groupId    = "io.violabs.konstellation"
-            artifactId = "meta-dsl"
+            artifactId = "dsl"
             version    = version
         }
     }
@@ -45,7 +42,7 @@ kover {
     reports {
         filters {
             excludes {
-                annotatedBy("io.violabs.picard.common.ExcludeFromCoverage")
+                annotatedBy("io.violabs.konstellation.common.ExcludeFromCoverage")
             }
         }
     }
