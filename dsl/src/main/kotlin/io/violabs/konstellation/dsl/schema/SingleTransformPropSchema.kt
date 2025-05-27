@@ -5,6 +5,10 @@ import com.squareup.kotlinpoet.TypeName
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 import io.violabs.konstellation.dsl.process.propSchema.PropertySchemaFactoryAdapter
 
+/**
+ * Schema for a property that applies a transformation to the input value in the DSL.
+ * This is typically used for properties that require some form of processing or conversion.
+ */
 class SingleTransformPropSchema(
     override val propName: String,
     val inputTypeName: TypeName,

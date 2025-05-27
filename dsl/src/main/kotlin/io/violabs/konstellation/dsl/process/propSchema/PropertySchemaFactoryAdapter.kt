@@ -5,6 +5,9 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeName
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 
+/**
+ * Adapter for property schema factory, providing details about a property in the DSL.
+ */
 interface PropertySchemaFactoryAdapter {
     val propName: String
     val actualPropTypeName: TypeName
@@ -26,6 +29,11 @@ interface PropertySchemaFactoryAdapter {
 
     fun nonNullablePropTypeName(): TypeName = actualPropTypeName.copy(nullable = false)
 
+    /**
+     * Interface representing details of a map property in the DSL.
+     * This interface provides information about the map's key and value types,
+     * as well as the group type of the map.
+     */
     interface MapDetails {
         val mapGroupType: GeneratedDsl.MapGroupType
         val keyType: TypeName

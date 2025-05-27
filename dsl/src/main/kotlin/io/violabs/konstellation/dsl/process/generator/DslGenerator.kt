@@ -19,15 +19,37 @@ import io.violabs.konstellation.dsl.utils.Colors
 import io.violabs.konstellation.dsl.utils.VLoggable
 import kotlin.reflect.KClass
 
+/**
+ * Interface for generating DSL builders and root DSL accessors.
+ * This interface defines the contract for generating DSL files based on domain configurations.
+ * @param propertySchemaFactory The type of the property schema factory adapter.
+ * @param builderGenerator The generator for DSL builders.
+ * @param rootDslAccessorGenerator The generator for root DSL accessors.
+ */
 interface DslGenerator<PARAM_ADAPTER : PropertySchemaFactoryAdapter, PROP_ADAPTER : DomainProperty> : VLoggable {
     val propertySchemaFactory: PropertySchemaFactory<PARAM_ADAPTER, PROP_ADAPTER>
     val builderGenerator: BuilderGenerator
     val rootDslAccessorGenerator: RootDslAccessorGenerator
     override fun logId(): String? = DslGenerator::class.simpleName
 
+    /**
+     * Generates the DSL builders and root DSL accessors based on the provided resolver and code generator.
+     * This method will process the annotations and generate the necessary files.
+     *
+     * @param resolver The KSP resolver used to access symbols and annotations.
+     * @param codeGenerator The KSP code generator used to write the generated files.
+     * @param options Compile-time options defined in the host project, such as classpath and marker class.
+     */
     fun generate(resolver: Resolver, codeGenerator: CodeGenerator, options: Map<String, String?> = emptyMap())
 }
 
+/**
+ * Default implementation of [DslGenerator].
+ * This class provides the default behavior for generating DSL builders and root DSL accessors.
+ * @property propertySchemaFactory The factory for creating property schemas.
+ * @property builderGenerator The generator for DSL builders.
+ * @property rootDslAccessorGenerator The generator for root DSL accessors.
+ */
 class DefaultDslGenerator(
     override val propertySchemaFactory: DefaultPropertySchemaFactory = DefaultPropertySchemaFactory(),
     override val builderGenerator: DefaultBuilderGenerator = DefaultBuilderGenerator(),
@@ -89,15 +111,37 @@ class DefaultDslGenerator(
         rootDslAccessorGenerator.generate(codeGenerator, rootClasses, builderConfig)
     }
 
+    /**
+     * Retrieves the generated DSL annotations from the resolver.
+     * This method fetches all class declarations annotated with [GeneratedDsl].
+     *
+     * @param resolver The KSP resolver used to access symbols and annotations.
+     * @return A list of KSClassDeclaration that are annotated with [GeneratedDsl].
+     */
     private fun getGeneratedDslAnnotation(resolver: Resolver): List<KSClassDeclaration> {
         return getClassDeclarationByAnnotation(resolver, GeneratedDsl::class)
     }
 
+    /**
+     * Retrieves the single entry transform DSL annotations from the resolver.
+     * This method fetches all class declarations annotated with [SingleEntryTransformDsl] and maps them by their class name.
+     *
+     * @param resolver The KSP resolver used to access symbols and annotations.
+     * @return A map of class names to their corresponding KSClassDeclaration for single entry transformations.
+     */
     private fun getSingleEntryTransformByClassName(resolver: Resolver): Map<String, KSClassDeclaration> {
         return getClassDeclarationByAnnotation(resolver, SingleEntryTransformDsl::class)
             .associateBy { it.toClassName().toString() }
     }
 
+    /**
+     * Retrieves class declarations annotated with a specific annotation.
+     * This method filters the symbols in the resolver to find class declarations that are annotated with the specified annotation.
+     *
+     * @param resolver The KSP resolver used to access symbols and annotations.
+     * @param klass The KClass representing the annotation to filter by.
+     * @return A list of KSClassDeclaration that are annotated with the specified annotation.
+     */
     private fun getClassDeclarationByAnnotation(resolver: Resolver, klass: KClass<*>): List<KSClassDeclaration> {
         return resolver
             .getSymbolsWithAnnotation(klass.qualifiedName!!)
@@ -106,6 +150,13 @@ class DefaultDslGenerator(
             .toList()
     }
 
+    /**
+     * Checks if the class declaration
+     * is a root DSL class.
+     *
+     * @receiver [KSClassDeclaration] The KSClassDeclaration to check.
+     * @return Boolean indicating whether the class is a root DSL class.
+     */
     private fun KSClassDeclaration.isRootDsl(): Boolean = this
         .annotations
         .filter { it.shortName.asString() == GeneratedDsl::class.simpleName }

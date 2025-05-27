@@ -1,46 +1,179 @@
-# konstellation
+# Konstellation
 
-A robust DSL generation library for generating Kotlin DSL.
+A robust Kotlin Symbol Processing (KSP) library for automatically generating type-safe Kotlin DSLs from annotated data classes.
 
-> :warning: **This is a work in progress.**
+> ⚠️ **This project is currently in active development and APIs may change.**
 
-## Logging
-### Tiered Logging Example
+## Overview
 
-The `Logger` methods now accept optional `tier` and `branch` parameters
-that help format nested log output with connecting lines.
+Konstellation eliminates the boilerplate of creating Kotlin DSLs by automatically generating builder patterns, DSL markers, and type-safe configuration interfaces from your existing data classes. Simply annotate your classes and let KSP handle the rest.
+
+## Features
+
+- 🚀 **Zero Runtime Overhead** - Pure compile-time code generation
+- 🛡️ **Type Safety** - Generated DSLs maintain full type safety
+- 🎯 **Minimal Setup** - Just add annotations to existing classes
+- 📊 **Rich Logging** - Tiered debug output for development insights
+- 🔧 **Flexible Configuration** - Customizable through KSP arguments
+
+## Quick Start
+
+### 1. Add Dependencies
+
+In your `build.gradle.kts`:
 
 ```kotlin
-val logger = Logger("DSL_BUILDER").enableDebug()
+plugins {
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
+}
 
-logger.debug("+++ DOMAIN: MyDomain +++")
-logger.debug("package: com.example", tier = 1, branch = true)
-logger.debug("type: MyDomain", tier = 1, branch = true)
-logger.debug("Properties", tier = 1)
-logger.debug("myProperty", tier = 2, branch = true)
-logger.debug("type: kotlin.String", tier = 3)
+dependencies {
+    implementation("io.violabs.konstellation:meta-dsl:0.0.2")
+    ksp("io.violabs.konstellation:dsl:0.0.1")
+}
+
+// Configure source sets for generated code
+kotlin.sourceSets["main"].kotlin {
+    srcDir("build/generated/ksp/main/kotlin")
+}
 ```
 
-Should have a structure if there are nested processes:
+### 2. Configure KSP
+
+```kotlin
+ksp {
+    arg("projectRootClasspath", "com.yourcompany.yourproject")
+    arg("dslBuilderClasspath", "com.yourcompany.yourproject.builders")
+    arg("dslMarkerClass", "com.yourcompany.yourproject.YourDSL")
+}
+```
+
+### 3. Annotate Your Classes
+
+```kotlin
+@GenerateDSL
+data class DatabaseConfig(
+    val host: String,
+    val port: Int,
+    val database: String,
+    val ssl: Boolean = false
+)
+```
+
+### 4. Use Your Generated DSL
+
+```kotlin
+val config = databaseConfig {
+    host = "localhost"
+    port = 5432
+    database = "myapp"
+    ssl = true
+}
+```
+
+## Real-World Example
+
+Here's a more complex example showing nested configuration:
+
+```kotlin
+@GenerateDSL
+data class BloomBuildPlannerQueue(
+    val maxQueuedTasksPerTenant: Int,
+    val storeTasksOnDisk: Boolean,
+    val tasksDiskDirectory: String,
+    val cleanTasksDirectory: Boolean
+)
+
+@GenerateDSL
+data class ServiceConfig(
+    val name: String,
+    val queue: BloomBuildPlannerQueue,
+    val timeout: Duration = Duration.ofSeconds(30)
+)
+```
+
+Generated usage:
+
+```kotlin
+val service = serviceConfig {
+    name = "data-processor"
+    queue {
+        maxQueuedTasksPerTenant = 100
+        storeTasksOnDisk = true
+        tasksDiskDirectory = "/tmp/tasks"
+        cleanTasksDirectory = true
+    }
+    timeout = Duration.ofMinutes(5)
+}
+```
+
+## Configuration Options
+
+| KSP Argument | Description | Example |
+|--------------|-------------|---------|
+| `projectRootClasspath` | Root package for your project | `com.yourcompany.project` |
+| `dslBuilderClasspath` | Package where builders are generated | `com.yourcompany.project.dsl` |
+| `dslMarkerClass` | Custom DSL marker annotation class | `com.yourcompany.project.MyDSL` |
+
+## Development & Debugging
+
+Konstellation includes sophisticated logging to help you understand the generation process:
 
 ```
-konstellation DEBUG [····DSL_BUILDER] *>> +++ DOMAIN: io.violabs.konstellation.starCharts.loki.bloomBuild.BloomBuildPlannerQueue  +++
-konstellation DEBUG [····DSL_BUILDER] *>>   |__ package: io.violabs.konstellation.starCharts.loki.bloomBuild
+konstellation DEBUG [····DSL_BUILDER] *>> +++ DOMAIN: BloomBuildPlannerQueue +++
+konstellation DEBUG [····DSL_BUILDER] *>>   |__ package: io.violabs.konstellation.example
 konstellation DEBUG [····DSL_BUILDER] *>>   |__ type: BloomBuildPlannerQueue
 konstellation DEBUG [····DSL_BUILDER] *>>   |__ builder: BloomBuildPlannerQueueBuilder
-konstellation DEBUG [····DSL_BUILDER] *>>   |__ DSL Marker added
-konstellation DEBUG [····DSL_BUILDER] *>>   |__ DSL Builder Interface added
 konstellation DEBUG [····DSL_BUILDER] *>>   |__ Properties added
 konstellation DEBUG [····DSL_BUILDER] *>>       |__ maxQueuedTasksPerTenant
 konstellation DEBUG [····DSL_BUILDER] *>>       |   |__ type: kotlin.Int
-konstellation DEBUG [····DSL_BUILDER] *>>       |   |__ singleEntryTransform: null
-konstellation DEBUG [····DSL_BUILDER] *>>       |__ storeTasksOnDisk
-konstellation DEBUG [····DSL_BUILDER] *>>       |   |__ type: kotlin.Boolean
-konstellation DEBUG [····DSL_BUILDER] *>>       |   |__ singleEntryTransform: null
-konstellation DEBUG [····DSL_BUILDER] *>>       |__ tasksDiskDirectory
-konstellation DEBUG [····DSL_BUILDER] *>>       |   |__ type: kotlin.String
-konstellation DEBUG [····DSL_BUILDER] *>>       |   |__ singleEntryTransform: null
-konstellation DEBUG [····DSL_BUILDER] *>>       |__ cleanTasksDirectory
-konstellation DEBUG [····DSL_BUILDER] *>>           |__ type: kotlin.Boolean
-konstellation DEBUG [····DSL_BUILDER] *>>           |__ singleEntryTransform: null
 ```
+
+To enable debug logging in your KSP processor, add:
+
+```kotlin
+ksp {
+    arg("enableDebugLogging", "true")
+}
+```
+
+## Project Structure
+
+```
+konstellation/
+├── meta-dsl/          # Annotations for consumers
+├── dsl/              # KSP processor implementation
+├── examples/         # Usage examples
+└── docs/            # Additional documentation
+```
+
+## Requirements
+
+- Kotlin 1.9.0+
+- KSP 1.9.0-1.0.13+
+- Gradle 7.0+
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## Roadmap
+
+- [ ] Support for generic types
+- [ ] Validation DSL generation
+- [ ] IDE plugin for better development experience
+- [ ] Performance optimizations
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+- 📝 [Documentation](https://github.com/violabs/konstellation/wiki)
+- 🐛 [Issue Tracker](https://github.com/violabs/konstellation/issues)
+- 💬 [Discussions](https://github.com/violabs/konstellation/discussions)
+
+---
+
+*Built with ❤️ by the Violabs team*

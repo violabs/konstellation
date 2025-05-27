@@ -10,6 +10,9 @@ import io.violabs.konstellation.dsl.domain.BuilderConfig
 import io.violabs.konstellation.dsl.process.DslFileWriter
 import io.violabs.konstellation.dsl.utils.VLoggable
 
+/**
+ * Interface for generating the root DSL accessor.
+ */
 interface RootDslAccessorGenerator : DslFileWriter, VLoggable {
     override fun logId(): String? = RootDslAccessorGenerator::class.simpleName
 
@@ -20,6 +23,9 @@ interface RootDslAccessorGenerator : DslFileWriter, VLoggable {
     )
 }
 
+/**
+ * Default implementation of [RootDslAccessorGenerator].
+ */
 class DefaultRootDslAccessorGenerator(
     private val rootFunctionGenerator: DefaultRootFunctionGenerator = DefaultRootFunctionGenerator(),
 ) : RootDslAccessorGenerator {

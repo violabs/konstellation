@@ -13,6 +13,11 @@ import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
 import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 
+/**
+ * Adapter for property schema factory, providing details about a property in the DSL.
+ * This interface is used to retrieve information about properties, including their types,
+ * annotations, and whether they have single entry transformations.
+ */
 class DefaultPropertySchemaFactoryAdapter(
     prop: KSPropertyDeclaration,
     singleEntryTransform: KSClassDeclaration?,
@@ -116,6 +121,13 @@ class DefaultPropertySchemaFactoryAdapter(
         return MapDetails(groupType, typeRefs.first(), typeRefs.last()).also { mapDetails = it }
     }
 
+    /**
+     * Details about a map property in the DSL.
+     *
+     * @property mapGroupType The type of the map group.
+     * @property keyType The type of the keys in the map.
+     * @property valueType The type of the values in the map.
+     */
     class MapDetails(
         override val mapGroupType: GeneratedDsl.MapGroupType = GeneratedDsl.MapGroupType.SINGLE,
         override val keyType: TypeName,

@@ -4,6 +4,10 @@ import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 
+/**
+ * Extension functions for [KSClassDeclaration] to check if it is a DSL class
+ * and to retrieve group type information from its annotations.
+ */
 fun KSClassDeclaration?.isGroupDsl(): Boolean = this?.annotations
     ?.filter { it.shortName.asString() == GeneratedDsl::class.simpleName }
     ?.any { annotation ->
@@ -14,6 +18,9 @@ fun KSClassDeclaration?.isGroupDsl(): Boolean = this?.annotations
     }
     ?: false
 
+/**
+ * Extension function to retrieve the group type from the annotations of a [KSClassDeclaration].
+ */
 fun KSClassDeclaration?.mapGroupType(): GeneratedDsl.MapGroupType? = this?.annotations
     ?.filter { it.shortName.asString() == GeneratedDsl::class.simpleName }
     ?.flatMap(KSAnnotation::arguments)

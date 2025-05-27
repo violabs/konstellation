@@ -7,6 +7,10 @@ import com.squareup.kotlinpoet.TypeName
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 import io.violabs.konstellation.dsl.builder.kpListOf
 
+/**
+ * Schema for a property that represents a list of items in the DSL.
+ * This is used when the property is expected to hold a collection of items.
+ */
 class ListPropSchema(
     override val propName: String,
     val collectionType: TypeName = STRING,

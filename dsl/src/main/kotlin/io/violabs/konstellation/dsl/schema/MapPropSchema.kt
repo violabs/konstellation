@@ -7,6 +7,9 @@ import com.squareup.kotlinpoet.TypeName
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 import io.violabs.konstellation.dsl.builder.kpMapOf
 
+/**
+ * Schema for a property that represents a map of items in the DSL.
+ */
 class MapPropSchema(
     override val propName: String,
     val mapKeyType: TypeName = STRING,

@@ -3,6 +3,9 @@ package io.violabs.konstellation.dsl.schema
 import com.squareup.kotlinpoet.*
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 
+/**
+ * Schema for a property that uses a builder pattern in the DSL.
+ */
 class BuilderPropSchema(
     override val propName: String,
     originalPropertyType: TypeName,
