@@ -2,6 +2,16 @@ package io.violabs.konstellation.dsl.domain
 
 import io.violabs.konstellation.dsl.utils.Logger
 
+/**
+ * Configuration for the DSL builder.
+ *
+ * @property map A map containing configuration properties.
+ * @property logger A logger instance for logging debug information.
+ *
+ * @constructor Creates a [BuilderConfig] instance with the provided map and logger.
+ *
+ * @throws RuntimeException if required properties are missing from the map.
+ */
 class BuilderConfig(
     map: Map<String, String?>,
     private val logger: Logger

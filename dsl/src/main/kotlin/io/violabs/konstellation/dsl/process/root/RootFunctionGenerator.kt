@@ -7,6 +7,9 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 import io.violabs.konstellation.dsl.domain.BuilderConfig
 
+/**
+ * Interface for generating the root DSL function.
+ */
 interface RootFunctionGenerator {
     fun generate(
         domain: KSClassDeclaration,
@@ -14,6 +17,10 @@ interface RootFunctionGenerator {
     ): FunSpec
 }
 
+/**
+ * Default implementation of [RootFunctionGenerator].
+ * This class generates a root function for the DSL that initializes a builder for the given domain.
+ */
 class DefaultRootFunctionGenerator : RootFunctionGenerator {
     override fun generate(
         domain: KSClassDeclaration,

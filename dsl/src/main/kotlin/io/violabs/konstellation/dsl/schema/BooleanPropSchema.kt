@@ -5,6 +5,9 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeName
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 
+/**
+ * Schema for a boolean property in the DSL.
+ */
 class BooleanPropSchema(
     override val propName: String,
     override val nullableAssignment: Boolean = true,

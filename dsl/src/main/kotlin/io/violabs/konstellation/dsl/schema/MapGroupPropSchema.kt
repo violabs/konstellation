@@ -5,6 +5,9 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 import io.violabs.konstellation.dsl.builder.kpMapOf
 
+/**
+ * Schema for a property that represents a group of items in the DSL
+ */
 class MapGroupPropSchema(
     override val propName: String,
     val mapKeyType: TypeName = STRING,

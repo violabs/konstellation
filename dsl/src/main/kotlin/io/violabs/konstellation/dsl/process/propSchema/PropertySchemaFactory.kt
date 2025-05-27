@@ -58,6 +58,10 @@ interface PropertySchemaFactory<T : PropertySchemaFactoryAdapter, P : DomainProp
     ): DslPropSchema
 }
 
+/**
+ * Default implementation of [PropertySchemaFactory] for [DefaultDomainProperty].
+ * This factory creates property schema adapters for the default domain properties.
+ */
 class DefaultPropertySchemaFactory() :
     AbstractPropertySchemaFactory<DefaultPropertySchemaFactoryAdapter, DefaultDomainProperty>() {
     init {
@@ -76,7 +80,6 @@ class DefaultPropertySchemaFactory() :
  * Base implementation of [PropertySchemaFactory] with common resolution logic.
  */
 abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P : DomainProperty> : PropertySchemaFactory<T, P> {
-    /** @inheritdoc */
     override fun determinePropertySchema(adapter: T, isLast: Boolean, log: Boolean): DslPropSchema {
         val logger = logger.copy(isDebugEnabled = log)
         val propName = adapter.propName

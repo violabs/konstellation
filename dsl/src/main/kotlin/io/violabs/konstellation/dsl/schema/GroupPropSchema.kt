@@ -6,7 +6,9 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 
-// Assuming GroupParam is similar to BuilderParam or a complex type needing its own builder
+/**
+ * Schema for a property that represents a group of items in the DSL.
+ */
 class GroupPropSchema(
     override val propName: String,
     originalPropertyType: TypeName,

@@ -17,9 +17,20 @@ import io.violabs.konstellation.dsl.utils.VLoggable
 import io.violabs.konstellation.dsl.utils.isGroupDsl
 import io.violabs.konstellation.dsl.utils.mapGroupType
 
+/** * Interface for generating DSL builders.
+ * This interface defines the contract for generating DSL builder files based on domain configurations.
+ */
 interface BuilderGenerator : DslFileWriter, VLoggable {
     override fun logId(): String? = BuilderGenerator::class.simpleName
 
+    /**
+     * Generates the DSL builder files for the given domain.
+     *
+     * @param codeGenerator The KSP CodeGenerator instance used to write the generated files.
+     * @param domain The KSClassDeclaration representing the domain for which the builder is generated.
+     * @param builderConfig The configuration for the DSL builder.
+     * @param singleEntryTransformByClassName A map of class names to their corresponding KSClassDeclaration for single entry transformations.
+     */
     fun generate(
         codeGenerator: CodeGenerator,
         domain: KSClassDeclaration,
@@ -28,6 +39,14 @@ interface BuilderGenerator : DslFileWriter, VLoggable {
     )
 }
 
+/**
+ * Default implementation of [BuilderGenerator].
+ * This class provides the default behavior for generating DSL builders.
+ * @property parameterService The service used to retrieve property schemas from the domain.
+ * @property annotationDecorator The decorator for handling annotations in the DSL builder.
+ * @property mapGroupGenerator The generator for map groups in the DSL builder.
+ * @property listGroupGenerator The generator for list groups in the DSL builder.
+ */
 class DefaultBuilderGenerator(
     val parameterService: DefaultPropertySchemaService = DefaultPropertySchemaService(),
     val annotationDecorator: AnnotationDecorator = AnnotationDecorator(),
@@ -52,6 +71,12 @@ class DefaultBuilderGenerator(
         generateFilesForDsl(domainConfig, codeGenerator)
     }
 
+    /**
+     * Generates the DSL builder files for the given domain configuration.
+     *
+     * @param domainConfig The configuration for the domain, including package name, class names, and builder details.
+     * @param codeGenerator The KSP CodeGenerator instance used to write the generated files.
+     */
     private fun generateFilesForDsl(
         domainConfig: DomainConfig,
         codeGenerator: CodeGenerator
@@ -136,6 +161,13 @@ class DefaultBuilderGenerator(
         logger.debug("file written: ${domainConfig.fileClassName}", tier = 1)
     }
 
+    /**
+     * Generates the content of the DSL builder file.
+     *
+     * @param domainConfig The configuration for the domain, including package name, class names, and builder details.
+     * @param params The list of property schemas to be included in the builder.
+     * @return A TypeSpec representing the DSL builder interface.
+     */
     private fun generateBuilderFileContent(
         domainConfig: DomainConfig,
         params: List<DslPropSchema>

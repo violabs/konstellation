@@ -2,8 +2,19 @@ package io.violabs.konstellation.dsl.builder
 
 import com.squareup.kotlinpoet.KModifier
 
+/**
+ * Base interface for KotlinPoet specifications.
+ */
 interface KotlinPoetSpec {
+    /**
+     * The name of the spec
+     */
     var name: String?
+
+    /**
+     * A list of modifiers for this spec
+     * @see [KModifier]
+     */
     val modifiers: MutableList<KModifier>
 }
 
@@ -14,6 +25,7 @@ abstract class DefaultKotlinPoetSpec : KotlinPoetSpec {
     /**
      * Add a single access modifier to this spec.
      *
+     * @param modifier The access modifier to add, e.g., [KModifier.PRIVATE], [KModifier.PUBLIC].
      * @throws IllegalArgumentException if an access modifier has already been set
      */
     fun accessModifier(modifier: KModifier) {
@@ -25,7 +37,17 @@ abstract class DefaultKotlinPoetSpec : KotlinPoetSpec {
         modifiers.add(modifier)
     }
 
+    /**
+     * Add a private access modifier to this spec.
+     *
+     * @return This spec with the private access modifier added.
+     */
     fun private() = accessModifier(KModifier.PRIVATE)
 
+    /**
+     * Add a public access modifier to this spec.
+     *
+     * @return This spec with the public access modifier added.
+     */
     fun public() = accessModifier(KModifier.PUBLIC)
 }

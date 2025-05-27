@@ -5,6 +5,9 @@ import io.violabs.konstellation.dsl.builder.AnnotationDecorator
 import io.violabs.konstellation.dsl.builder.kpMapOf
 import io.violabs.konstellation.dsl.builder.kpMutableMapOf
 
+/**
+ * Generator config for a DSL group that represents a map of items.
+ */
 private val MAP_GROUP_GENERATOR_CONFIG = GroupGenerator.Config(
     namespace = GroupGenerator.Namespace(
         checkName = "isMapGroup", typeName = "MapGroup", typeVariable = "T"
@@ -23,6 +26,12 @@ private val MAP_GROUP_GENERATOR_CONFIG = GroupGenerator.Config(
         kpMapOf(typeVariable, className, nullable = false)
     })
 
+/**
+ * A generator for a DSL group that represents a map of items.
+ * This generator is used to create a mutable map of items in the DSL.
+ *
+ * @property annotationDecorator An optional decorator for annotations.
+ */
 class MapGroupGenerator(
     annotationDecorator: AnnotationDecorator = AnnotationDecorator()
 ) : GroupGenerator<String>(MAP_GROUP_GENERATOR_CONFIG, annotationDecorator) {
