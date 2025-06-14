@@ -1,6 +1,7 @@
 package io.violabs.konstellation.dsl.builder
 
 import com.squareup.kotlinpoet.KModifier
+import io.violabs.konstellation.dsl.exception.KonstellationException
 
 /**
  * Base interface for KotlinPoet specifications.
@@ -31,7 +32,7 @@ abstract class DefaultKotlinPoetSpec : KotlinPoetSpec {
     fun accessModifier(modifier: KModifier) {
         val existing = modifiers.firstOrNull { it in KPPropertySpecBuilder.Companion.ALL_ACCESS_MODIFIERS }
         if (existing != null) {
-            throw IllegalArgumentException("access modifier already set to $existing")
+            throw KonstellationException("access modifier already set to $existing")
         }
 
         modifiers.add(modifier)

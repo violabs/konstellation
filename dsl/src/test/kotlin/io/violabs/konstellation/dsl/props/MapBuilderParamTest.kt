@@ -14,7 +14,8 @@ class MapBuilderParamTest : UnitSim() {
         given {
             val param = MapGroupPropSchema("test", STRING, TestObj::class.asTypeName() as TypeName)
 
-            expect { "private var test: kotlin.collections.Map<kotlin.String, io.violabs.konstellation.dsl.props.MapBuilderParamTest.TestObj>? = null" }
+            expect { "private var test: kotlin.collections.Map<kotlin.String, " +
+                "io.violabs.konstellation.dsl.props.MapBuilderParamTest.TestObj>? = null" }
 
             whenever {
                 val propSpec = param.toPropertySpec()

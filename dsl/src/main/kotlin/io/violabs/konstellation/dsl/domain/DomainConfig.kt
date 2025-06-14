@@ -11,7 +11,8 @@ import com.squareup.kotlinpoet.ksp.toClassName
  * This class holds the necessary information to generate the DSL builder and related files.
  *
  * @param builderConfig The configuration for the DSL builder.
- * @param singleEntryTransformByClassName A map of class names to their corresponding KSClassDeclaration for single entry transformations.
+ * @param singleEntryTransformByClassName A map of class names to their corresponding
+ *                                       KSClassDeclaration for single entry transformations.
  * @param domain The KSClassDeclaration representing the domain.
  * @property dslBuilderPostfix The postfix to be used for the DSL builder class name.
  * @property dslBuildFilePostfix The postfix to be used for the DSL build file class name.

@@ -76,8 +76,10 @@ class KPFunSpecBuilder : ParamSpecEnabled {
     /**
      * Builds the [FunSpec] object with the specified properties.
      *
-     * @return A [FunSpec] object representing the function with the specified name, parameters, return type, KDoc, annotations, and statements.
+     * @return A [FunSpec] object representing the function with the specified name, parameters,
+     *         return type, KDoc, annotations, and statements.
      */
+    @Suppress("SpreadOperator")
     fun build(): FunSpec {
         val name = requireNotNull(funName) { "Fun - funName must be set" }
         var spec = FunSpec.builder(name)

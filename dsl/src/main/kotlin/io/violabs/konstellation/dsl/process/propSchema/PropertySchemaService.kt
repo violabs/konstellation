@@ -13,7 +13,8 @@ interface PropertySchemaService<FACTORY_ADAPTER : PropertySchemaFactoryAdapter, 
 }
 
 /**
- * Default implementation of [PropertySchemaService] that uses [DefaultPropertySchemaFactory] to create property schemas.
+ * Default implementation of [PropertySchemaService] that
+ * uses [DefaultPropertySchemaFactory] to create property schemas.
  * It converts domain properties into DSL property schemas.
  */
 class DefaultPropertySchemaService(

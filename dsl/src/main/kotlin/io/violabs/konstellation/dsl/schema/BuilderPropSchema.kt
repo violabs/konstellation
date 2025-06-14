@@ -1,6 +1,8 @@
 package io.violabs.konstellation.dsl.schema
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FunSpec
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 
 /**
