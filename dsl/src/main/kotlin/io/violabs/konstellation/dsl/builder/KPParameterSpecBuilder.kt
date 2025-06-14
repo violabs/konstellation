@@ -29,6 +29,7 @@ class KPParameterSpecBuilder : TypedSpec, DefaultKotlinPoetSpec() {
      * Builds the [ParameterSpec] with the specified name, type, modifiers, and default value.
      * @return A [ParameterSpec] object representing the parameter.
      */
+    @Suppress("SpreadOperator")
     fun build(): ParameterSpec {
         var spec = ParameterSpec.Companion
             .builder(

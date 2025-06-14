@@ -1,6 +1,11 @@
 package io.violabs.konstellation.dsl.builder
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.TypeVariableName
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.TypeSpec
 
 /**
  * A builder for creating Kotlin Poets [TypeSpec].
@@ -109,7 +114,8 @@ class KPTypeSpecBuilder : DefaultKotlinPoetSpec() {
     }
 
     /**
-     * Builds the [TypeSpec] with the specified name, super interface, type variables, annotations, properties, functions, and nested types.
+     * Builds the [TypeSpec] with the specified name, super interface, type variables,
+     * annotations, properties, functions, and nested types.
      * @return A [TypeSpec] object representing the type.
      */
     fun build(): TypeSpec {

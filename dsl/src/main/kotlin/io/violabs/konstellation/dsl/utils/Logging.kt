@@ -35,6 +35,7 @@ private const val FIXED_PADDING_LENGTH = 25
 private val FRONT_LOADED_SPACES = System.getProperty("frontLoadedSpaces")?.toBoolean() ?: true
 private const val PADDING_CHAR = '·' // Simple middle dot for padding
 
+@Suppress("TooManyFunctions")
 data class Logger(
     private val logId: String,
     private var isDebugEnabled: Boolean = true,
@@ -89,7 +90,7 @@ data class Logger(
         updateBranches(tier, branch)
     }
 
-    fun debug(message: Any, tier: Int = 0, branch: Boolean = false, continuous: Boolean = false) {
+    fun debug(message: Any, tier: Int = 0, branch: Boolean = false) {
         if (!isDebugEnabled) return
         val id = Logging.ID_TEMPLATE.format(formattedName)
         val prefix = tierPrefix(tier)
@@ -101,7 +102,9 @@ data class Logger(
         if (!isWarningEnabled) return
         val id = Logging.ID_TEMPLATE.format(formattedName)
         val prefix = tierPrefix(tier)
-        println("${Logging.LOGO} ${Logging.WARN} $id ${Logging.DELIMITER} ${Colors.YELLOW}$prefix$message${Colors.RESET}")
+        println(
+            "${Logging.LOGO} ${Logging.WARN} $id ${Logging.DELIMITER} ${Colors.YELLOW}$prefix$message${Colors.RESET}"
+        )
         updateBranches(tier, branch)
     }
 

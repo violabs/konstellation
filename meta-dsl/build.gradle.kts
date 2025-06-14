@@ -1,4 +1,5 @@
 plugins {
+    id("io.gitlab.arturbosch.detekt")
     `java-library`
     `maven-publish`
 }

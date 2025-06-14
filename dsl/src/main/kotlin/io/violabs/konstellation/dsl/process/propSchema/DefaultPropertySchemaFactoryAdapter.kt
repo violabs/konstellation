@@ -113,12 +113,22 @@ class DefaultPropertySchemaFactoryAdapter(
     override fun mapDetails(): PropertySchemaFactoryAdapter.MapDetails? {
         if (mapDetails != null) return mapDetails
 
-        val groupType = mapGroupType() ?: return null
+        return createMapDetails().also { mapDetails = it }
+    }
 
+    private fun createMapDetails(): MapDetails? {
+        val groupType = mapGroupType()
+        val typeRefs = getTypeArguments()
+
+        if (groupType == null || typeRefs == null) return null
+
+        return MapDetails(groupType, typeRefs.first(), typeRefs.last())
+    }
+
+    private fun getTypeArguments(): List<TypeName>?  {
         if (actualPropTypeName !is ParameterizedTypeName) return null
 
-        val typeRefs = actualPropTypeName.typeArguments
-        return MapDetails(groupType, typeRefs.first(), typeRefs.last()).also { mapDetails = it }
+        return actualPropTypeName.typeArguments
     }
 
     /**

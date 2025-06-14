@@ -2,6 +2,7 @@ package io.violabs.konstellation.dsl.builder
 
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.TypeName
+import io.violabs.konstellation.dsl.exception.KonstellationException
 
 /**
  * A KotlinPoetSpec that allows setting a type for the DSL element.
@@ -64,6 +65,6 @@ interface TypedSpec : KotlinPoetSpec {
      * @throws [IllegalArgumentException] if the type is already set.
      */
     private fun typeCheck() {
-        if (type != null) throw IllegalArgumentException("type already set: $type")
+        if (type != null) throw KonstellationException("type already set: $type")
     }
 }

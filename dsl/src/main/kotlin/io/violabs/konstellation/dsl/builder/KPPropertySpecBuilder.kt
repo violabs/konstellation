@@ -32,6 +32,7 @@ class KPPropertySpecBuilder : TypedSpec, MutabilitySpec, DefaultKotlinPoetSpec()
      * Builds the [PropertySpec] with the specified name, type, modifiers, and initializer.
      * @return A [PropertySpec] object representing the property.
      */
+    @Suppress("SpreadOperator")
     fun build(): PropertySpec {
         var spec = PropertySpec
             .builder(

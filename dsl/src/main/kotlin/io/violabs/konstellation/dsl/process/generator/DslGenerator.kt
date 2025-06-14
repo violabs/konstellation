@@ -124,7 +124,8 @@ class DefaultDslGenerator(
 
     /**
      * Retrieves the single entry transform DSL annotations from the resolver.
-     * This method fetches all class declarations annotated with [SingleEntryTransformDsl] and maps them by their class name.
+     * This method fetches all class declarations annotated with [SingleEntryTransformDsl] and
+     * maps them by their class name.
      *
      * @param resolver The KSP resolver used to access symbols and annotations.
      * @return A map of class names to their corresponding KSClassDeclaration for single entry transformations.
@@ -136,7 +137,8 @@ class DefaultDslGenerator(
 
     /**
      * Retrieves class declarations annotated with a specific annotation.
-     * This method filters the symbols in the resolver to find class declarations that are annotated with the specified annotation.
+     * This method filters the symbols in the resolver to find class declarations that are
+     * annotated with the specified annotation.
      *
      * @param resolver The KSP resolver used to access symbols and annotations.
      * @param klass The KClass representing the annotation to filter by.
