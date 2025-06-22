@@ -1,0 +1,30 @@
+jreleaser:
+  environment:
+    variables: deploy-secrets.properties
+
+  sign:
+    active: ALWAYS
+    mode: COMMAND
+    passphrase: ${JRELEASER_GPG_PASSPHRASE}
+
+  release:
+    github:
+      active: NEVER
+
+  deploy:
+    maven:
+      mavenCentral:
+        sonatype:
+          active: ALWAYS
+          url: https://central.sonatype.com/api/v1/publisher
+
+          # credentials must be provided in deploy-secrets.properties as:
+          # JRELEASER_MAVENCENTRAL_SONATYPE_USERNAME=…
+          # JRELEASER_MAVENCENTRAL_SONATYPE_PASSWORD=…
+          username: ${JRELEASER_MAVENCENTRAL_USERNAME}
+          password: ${JRELEASER_MAVENCENTRAL_TOKEN}
+
+          # enforce Sonatype rules
+          sign: true
+          checksums: true
+          applyMavenCentralRules: true

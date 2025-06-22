@@ -2,8 +2,15 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+repositories {
+    maven {
+        url = uri("https://reliquary.open.nyc3.cdn.digitaloceanspaces.com")
+    }
+}
+
 dependencies {
-    ksp(project(":dsl"))
+//    ksp(project(":dsl"))
+    ksp("io.violabs.konstellation:dsl:0.0.1")
     implementation(project(":meta-dsl"))
     implementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation(project(":core-test"))

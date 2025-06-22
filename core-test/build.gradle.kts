@@ -16,3 +16,9 @@ tasks.withType<Test> {
         isEnabled = true
     }
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}

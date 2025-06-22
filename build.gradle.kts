@@ -1,3 +1,7 @@
+import java.util.Properties
+import kotlin.apply
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 plugins {
     kotlin("jvm") version "2.1.20"
@@ -7,14 +11,16 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.9.1"
     application
     id("io.violabs.plugins.pipeline")
+
+    id("org.jreleaser") version "1.18.0"
 }
 
-group = "io.violabs"
+group = "io.violabs.konstellation"
 version = "0.0.1"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
@@ -65,3 +71,39 @@ tasks.register("koverMergedReport") {
 
     dependsOn(subprojects.map { it.tasks.named("koverXmlReport") })
 }
+
+val secretPropsFile = project.rootProject.file("secret.properties") // update to your secret file under `buildSrc`
+val ext = project.extensions.extraProperties
+if (secretPropsFile.exists()) {
+    secretPropsFile.reader().use {
+        Properties().apply { load(it) }
+    }.onEach { (name, value) ->
+        ext[name.toString()] = value
+    }
+    project.logger.log(LogLevel.LIFECYCLE, "Secrets loaded from file: $ext")
+}
+
+jreleaser {
+    environment {
+        // point at the file in your project root
+        variables.set(file("$rootDir/deploy-secrets.properties"))
+    }
+}
+
+//
+//nexusPublishing {
+//    repositories {
+//        sonatype {
+//            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+//            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+//            username.set(findStringProperty("sonatype.username"))
+//            password.set(findStringProperty("sonatype.token"))
+//        }
+//    }
+//}
+//
+//private fun findStringProperty(key: String): String? {
+//    val value = findProperty(key) as? String
+//    if (value == null) logger.warn("Property '$key' not found in properties")
+//    return value
+//}

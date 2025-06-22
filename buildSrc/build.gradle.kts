@@ -22,6 +22,7 @@ dependencies {
     implementation("org.springframework:spring-context:6.1.14")
 
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
+    implementation("software.amazon.awssdk:s3:2.25.27")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0-rc2")
     annotationProcessor("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0-rc2")
@@ -32,6 +33,30 @@ gradlePlugin {
         create("pipeline") {
             id = "io.violabs.plugins.pipeline"
             implementationClass = "io.violabs.konstellation.plugins.pipeline.PipelinePlugin"
+        }
+    }
+
+    plugins {
+        create("digitalOceanSpacesPublishing") {
+            id = "io.violabs.plugins.open.publishing.digital-ocean-spaces"
+            version = "0.0.1"
+            implementationClass = "io.violabs.plugins.open.publishing.digitalocean.DigitalOceanSpacesPublishPlugin"
+        }
+    }
+
+    plugins {
+        create("secretsLoader") {
+            id = "io.violabs.plugins.open.secrets.loader"
+            version = "0.0.1"
+            implementationClass = "io.violabs.plugins.open.secrets.SecretsLoaderPlugin"
+        }
+    }
+
+    plugins {
+        create("manualMavenArtifacts") {
+            id = "io.violabs.plugins.open.publishing.manual-maven-artifacts"
+            version = "0.0.1"
+            implementationClass = "io.violabs.plugins.open.publishing.ManualMavenArtifactsPlugin"
         }
     }
 }

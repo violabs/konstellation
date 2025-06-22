@@ -1,10 +1,15 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+import io.violabs.plugins.open.secrets.getPropertyOrEnv
+import org.jetbrains.dokka.gradle.DokkaTask
+import java.net.URI
 
 plugins {
     id("io.gitlab.arturbosch.detekt")
     `java-library`
     `maven-publish`
+    id("io.violabs.plugins.open.secrets.loader")
+    id("io.violabs.plugins.open.publishing.digital-ocean-spaces")
 }
 
 group = "io.violabs.konstellation"
@@ -29,17 +34,12 @@ dependencies {
 
 tasks.jar {
     archiveBaseName.set("dsl")
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("local") {
-            from(components["java"])
-            groupId    = "io.violabs.konstellation"
-            artifactId = "dsl"
-            version    = version
-        }
-    }
+//    dependsOn(subprojects.map { it.tasks.named("classes") })
+//
+//    // Pull in each subproject’s compiled classes & resources
+//    from(subprojects.map { proj ->
+//        proj.extensions.getByType<SourceSetContainer>()["main"].output
+//    })
 }
 
 kover {
@@ -76,4 +76,33 @@ tasks.withType<Detekt>().configureEach {
 
 tasks.withType<DetektCreateBaselineTask>().configureEach {
     jvmTarget = JavaVersion.VERSION_21.majorVersion
+}
+
+tasks.named<DokkaTask>("dokkaJavadoc") {
+    dokkaSourceSets {
+        named("main") {
+            includeNonPublic.set(true)
+            skipDeprecated.set(true)
+            jdkVersion.set(17)
+            sourceLink {
+                val uri: URI = URI.create("https://github.com/violabs/konstellation")
+                this.remoteUrl.set(uri.toURL())
+                this.remoteLineSuffix.set("#L")
+                this.localDirectory.set(project.projectDir)
+            }
+        }
+    }
+}
+
+digitalOceanSpacesPublishing {
+    bucket = "reliquary.open"
+    accessKey = project.getPropertyOrEnv("spaces.key", "DO_SPACES_API_KEY")
+    secretKey = project.getPropertyOrEnv("spaces.secret", "DO_SPACES_SECRET")
+    artifactPath = "io/violabs/konstellation/dsl/$version"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17) // Specify your desired Java version here
+    }
 }

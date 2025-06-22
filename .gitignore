@@ -4,3 +4,9 @@
 .gradle/** 
 
 **/.gradle/**
+
+secret.properties
+
+jreleaser_public.asc
+public.key
+
