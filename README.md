@@ -28,7 +28,7 @@ plugins {
 }
 
 dependencies {
-    implementation("io.violabs.konstellation:meta-dsl:0.0.2")
+    implementation("io.violabs.konstellation:meta-dsl:0.0.1")
     ksp("io.violabs.konstellation:dsl:0.0.1")
 }
 
