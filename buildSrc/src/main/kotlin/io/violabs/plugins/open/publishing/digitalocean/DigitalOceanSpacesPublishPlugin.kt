@@ -35,12 +35,14 @@ class DigitalOceanSpacesPublishPlugin : Plugin<Project> {
                 description = "Checks if the current version already exists in Digital Ocean Spaces"
                 this.extension.set(extension)
                 this.s3Client = doSpacesClient.s3Client()
+                continueOnFailure.set(extension.continueOnVersionCheckFailure)
             }
 
             logger.lifecycle(" | [INFO] Registering `uploadToDigitalOceanSpaces` task")
             if (extension.dryRun) {
                 logger.lifecycle(" | [INFO] Dry run mode enabled, uploads will not be performed.")
             }
+
             // Register the upload task
             tasks.register<DigitalOceanSpacesUploadTask>("uploadToDigitalOceanSpaces") {
                 group = "publishing"
@@ -51,8 +53,8 @@ class DigitalOceanSpacesPublishPlugin : Plugin<Project> {
                     doSpacesClient
                 }
                 jarQualifier = extension.jarQualifier ?: project.name
+                checkS3Client = doSpacesClient.s3Client()
 
-                // Make sure we run after the build task
                 dependsOn("build", "assembleMavenArtifacts")
 
                 // If using the maven-publish plugin, also depend on publish tasks

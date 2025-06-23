@@ -64,6 +64,7 @@ class DefaultDigitalOceanSpacesClient(
                 val request = PutObjectRequest.builder()
                     .bucket(ext.bucket)
                     .key(key)
+                    .acl("public-read")
                     .build()
 
                 it.putObject(request, file.toPath())

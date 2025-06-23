@@ -41,7 +41,7 @@ tasks.named<DokkaTask>("dokkaJavadoc") {
 }
 
 digitalOceanSpacesPublishing {
-    bucket = "reliquary.open"
+    bucket = "open-reliquary"
     accessKey = project.getPropertyOrEnv("spaces.key", "DO_SPACES_API_KEY")
     secretKey = project.getPropertyOrEnv("spaces.secret", "DO_SPACES_SECRET")
     artifactPath = "io/violabs/konstellation/meta-dsl/$version"

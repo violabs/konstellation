@@ -3,6 +3,7 @@ package io.violabs.plugins.open.publishing.digitalocean
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import software.amazon.awssdk.services.s3.S3Client
 import java.io.File
 
 /**
@@ -14,6 +15,9 @@ import java.io.File
 abstract class DigitalOceanSpacesUploadTask : DefaultTask() {
     @get:Input
     abstract var jarQualifier: String?
+
+    @get:Input
+    abstract var checkS3Client: S3Client
 
     @get:Input
     abstract var digitalOceanSpacesClient: DigitalOceanSpacesClient
@@ -38,6 +42,17 @@ abstract class DigitalOceanSpacesUploadTask : DefaultTask() {
      */
     @TaskAction
     fun uploadToSpaces() {
+        try {
+            DigitalOceanSpacesCheckVersionTask.checkVersion(
+                project,
+                digitalOceanSpacesClient.ext,
+                checkS3Client
+            )
+        } catch (e: Exception) {
+            project.logger.warn("Version check failed, but continuing due to configuration: ${e.message}")
+            return
+        }
+
         // Get the build directory
         val buildDir: File = project.layout.buildDirectory.get().asFile
 

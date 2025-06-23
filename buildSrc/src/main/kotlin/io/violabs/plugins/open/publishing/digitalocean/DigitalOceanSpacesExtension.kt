@@ -40,4 +40,6 @@ open class DigitalOceanSpacesExtension {
      * Whether to perform the actual upload or just a dry run
      */
     var dryRun: Boolean = false
+
+    var continueOnVersionCheckFailure: Boolean = true
 }
