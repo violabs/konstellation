@@ -10,6 +10,7 @@ plugins {
     `maven-publish`
     id("io.violabs.plugins.open.secrets.loader")
     id("io.violabs.plugins.open.publishing.digital-ocean-spaces")
+    id("io.violabs.plugins.open.publishing.maven-generated-artifacts") version "0.0.1"
 }
 
 group = "io.violabs.konstellation"
