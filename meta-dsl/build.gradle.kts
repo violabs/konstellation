@@ -1,6 +1,4 @@
 import io.violabs.plugins.open.secrets.getPropertyOrEnv
-import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.named
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URI
 
@@ -9,6 +7,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("io.violabs.plugins.open.secrets.loader")
+    id("io.violabs.plugins.open.publishing.maven-generated-artifacts")
     id("io.violabs.plugins.open.publishing.digital-ocean-spaces")
 }
 
@@ -44,7 +43,36 @@ digitalOceanSpacesPublishing {
     bucket = "open-reliquary"
     accessKey = project.getPropertyOrEnv("spaces.key", "DO_SPACES_API_KEY")
     secretKey = project.getPropertyOrEnv("spaces.secret", "DO_SPACES_SECRET")
-    artifactPath = "io/violabs/konstellation/meta-dsl/$version"
+    publishedVersion = version.toString()
+}
+
+mavenGeneratedArtifacts {
+    publicationName = "digitalOceanSpaces"
+    name = "Konstellation DSL Builder Metadata"
+    description = """
+            Classes for use alongside the Konstellation DSL Builder.
+        """
+    websiteUrl = "https://github.com/violabs/konstellation/tree/main/meta-dsl"
+
+    licenses {
+        license {
+            name = "Apache License, Version 2.0"
+            url = "https://www.apache.org/licenses/LICENSE-2.0"
+        }
+    }
+
+    developers {
+        developer {
+            id = "violabs"
+            name = "Violabs Team"
+            email = "support@violabs.io"
+            organization = "Violabs Software"
+        }
+    }
+
+    scm {
+        connection = "https://github.com/violabs/konstellation.git"
+    }
 }
 
 java {

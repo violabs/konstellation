@@ -12,7 +12,8 @@ plugins {
     application
     id("io.violabs.plugins.pipeline")
 
-    id("org.jreleaser") version "1.18.0"
+    id("io.violabs.plugins.open.publishing.maven-generated-artifacts") version "0.0.13" apply false
+    id("io.violabs.plugins.open.publishing.digital-ocean-spaces") version "0.0.8" apply false
 }
 
 group = "io.violabs.konstellation"
@@ -42,7 +43,8 @@ allprojects {
 
         implementation("io.github.microutils:kotlin-logging:4.0.0-beta-2")
 
-        testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+        testImplementation(kotlin("test")) // Kotlin’s own assert functions, optional but handy
+        testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.0-M1")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
 
@@ -82,28 +84,3 @@ if (secretPropsFile.exists()) {
     }
     project.logger.log(LogLevel.LIFECYCLE, "Secrets loaded from file: $ext")
 }
-
-jreleaser {
-    environment {
-        // point at the file in your project root
-        variables.set(file("$rootDir/deploy-secrets.properties"))
-    }
-}
-
-//
-//nexusPublishing {
-//    repositories {
-//        sonatype {
-//            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
-//            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
-//            username.set(findStringProperty("sonatype.username"))
-//            password.set(findStringProperty("sonatype.token"))
-//        }
-//    }
-//}
-//
-//private fun findStringProperty(key: String): String? {
-//    val value = findProperty(key) as? String
-//    if (value == null) logger.warn("Property '$key' not found in properties")
-//    return value
-//}

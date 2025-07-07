@@ -37,26 +37,10 @@ gradlePlugin {
     }
 
     plugins {
-        create("digitalOceanSpacesPublishing") {
-            id = "io.violabs.plugins.open.publishing.digital-ocean-spaces"
-            version = "0.0.1"
-            implementationClass = "io.violabs.plugins.open.publishing.digitalocean.DigitalOceanSpacesPublishPlugin"
-        }
-    }
-
-    plugins {
         create("secretsLoader") {
             id = "io.violabs.plugins.open.secrets.loader"
             version = "0.0.1"
             implementationClass = "io.violabs.plugins.open.secrets.SecretsLoaderPlugin"
-        }
-    }
-
-    plugins {
-        create("manualMavenArtifacts") {
-            id = "io.violabs.plugins.open.publishing.manual-maven-artifacts"
-            version = "0.0.1"
-            implementationClass = "io.violabs.plugins.open.publishing.ManualMavenArtifactsPlugin"
         }
     }
 }
