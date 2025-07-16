@@ -5,6 +5,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import io.violabs.konstellation.dsl.builder.kotlinPoet
+import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
 
 /**
  * Represents a property in a generated DSL builder.
@@ -18,6 +19,7 @@ interface DslPropSchema {
     val verifyNotEmpty: Boolean get() = false
     val iterableType: IterableType? get() = null
     val accessModifier: KModifier get() = KModifier.PRIVATE
+    val defaultValue: DefaultPropertyValue? get() = null
 
     fun isCollection(): Boolean = iterableType == IterableType.COLLECTION
     fun isMap(): Boolean = iterableType == IterableType.MAP
@@ -32,7 +34,9 @@ interface DslPropSchema {
             name = propName
             type(propTypeName.copy(nullable = true))
 
-            initNullValue()
+            defaultValue?.codeBlock?.let {
+                initializer = it
+            } ?: initNullValue()
         }
     }
 

@@ -48,7 +48,8 @@ class GenerateTest : UnitSim() {
                         "1" to picard,
                         "2" to riker
                     ),
-                    notes = listOf("Needs some work")
+                    notes = listOf("Needs some work"),
+                    defaultString = "DEFAULT"
                 )
             }
 

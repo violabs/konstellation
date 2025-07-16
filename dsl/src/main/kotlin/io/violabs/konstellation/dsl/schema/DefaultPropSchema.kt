@@ -2,6 +2,7 @@ package io.violabs.konstellation.dsl.schema
 
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeName
+import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
 import io.violabs.konstellation.dsl.process.propSchema.PropertySchemaFactoryAdapter
 
 /**
@@ -11,6 +12,7 @@ class DefaultPropSchema(
     override val propName: String,
     actualPropTypeName: TypeName,
     override val nullableAssignment: Boolean = true,
+    override val defaultValue: DefaultPropertyValue? = null
 ) : DslPropSchema {
     override val propTypeName: TypeName = actualPropTypeName.copy(nullable = nullableAssignment)
 

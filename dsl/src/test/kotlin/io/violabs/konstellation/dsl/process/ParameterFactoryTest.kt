@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import io.violabs.geordi.UnitSim
+import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
 import io.violabs.konstellation.dsl.domain.DomainProperty
 import io.violabs.konstellation.dsl.process.propSchema.AbstractPropertySchemaFactory
 import io.violabs.konstellation.dsl.process.propSchema.PropertySchemaFactoryAdapter
@@ -77,7 +78,8 @@ class ParameterFactoryTest : UnitSim() {
 
     class TestParamFactoryAdaptor(
         override val actualPropTypeName: TypeName = STRING,
-        val isGroup: Boolean = false
+        val isGroup: Boolean = false,
+        override val defaultValue: DefaultPropertyValue? = null
     ) : PropertySchemaFactoryAdapter {
         override val propName: String = "test"
         override val hasSingleEntryTransform: Boolean = false

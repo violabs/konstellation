@@ -4,6 +4,7 @@ import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
@@ -12,6 +13,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
 import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
+import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
 
 /**
  * Adapter for property schema factory, providing details about a property in the DSL.
@@ -21,6 +23,7 @@ import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 class DefaultPropertySchemaFactoryAdapter(
     prop: KSPropertyDeclaration,
     singleEntryTransform: KSClassDeclaration?,
+    override val defaultValue: DefaultPropertyValue? = null
 ) : PropertySchemaFactoryAdapter {
     override val propName: String = prop.simpleName.asString()
     override val actualPropTypeName: TypeName = prop.type.toTypeName()
@@ -28,7 +31,8 @@ class DefaultPropertySchemaFactoryAdapter(
 
     constructor(propertyAdapter: DefaultDomainProperty) : this(
         propertyAdapter.prop,
-        propertyAdapter.singleEntryTransform()
+        propertyAdapter.singleEntryTransform(),
+        propertyAdapter.defaultValue
     )
 
     private val singleEntryTransformAnnotation = singleEntryTransform

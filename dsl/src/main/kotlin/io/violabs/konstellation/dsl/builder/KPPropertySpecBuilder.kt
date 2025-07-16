@@ -1,5 +1,6 @@
 package io.violabs.konstellation.dsl.builder
 
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
@@ -19,13 +20,17 @@ class KPPropertySpecBuilder : TypedSpec, MutabilitySpec, DefaultKotlinPoetSpec()
     /**
      * The initial value of the property.
      */
-    var initializer: String? = null
+    var initializer: CodeBlock? = null
+
+    fun initializer(code: String) {
+        initializer = CodeBlock.of(code)
+    }
 
     /**
      * Sets the initial value of the property to null.
      */
     fun initNullValue() {
-        initializer = "null"
+        initializer = CodeBlock.of("null")
     }
 
     /**

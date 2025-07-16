@@ -18,5 +18,6 @@ data class StarShip(
     val notes: List<String>? = null,
     val passengers: List<Passenger>? = null,
     val areaCodes: Map<String, String>? = null,
-    val roomMap: Map<String, Passenger>? = null
+    val roomMap: Map<String, Passenger>? = null,
+    val defaultString: String = "DEFAULT"
 )
