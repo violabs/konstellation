@@ -4,16 +4,15 @@ import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
-import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
 import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
+import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
+import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
 
 /**
  * Adapter for property schema factory, providing details about a property in the DSL.
@@ -129,7 +128,7 @@ class DefaultPropertySchemaFactoryAdapter(
         return MapDetails(groupType, typeRefs.first(), typeRefs.last())
     }
 
-    private fun getTypeArguments(): List<TypeName>?  {
+    private fun getTypeArguments(): List<TypeName>? {
         if (actualPropTypeName !is ParameterizedTypeName) return null
 
         return actualPropTypeName.typeArguments

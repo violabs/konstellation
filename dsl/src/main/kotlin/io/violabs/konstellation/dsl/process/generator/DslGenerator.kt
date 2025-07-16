@@ -3,10 +3,7 @@ package io.violabs.konstellation.dsl.process.generator
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.squareup.kotlinpoet.ksp.toClassName
-import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
-import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
 import io.violabs.konstellation.dsl.domain.BuilderConfig
 import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 import io.violabs.konstellation.dsl.domain.DomainProperty
@@ -18,7 +15,8 @@ import io.violabs.konstellation.dsl.process.root.DefaultRootDslAccessorGenerator
 import io.violabs.konstellation.dsl.process.root.RootDslAccessorGenerator
 import io.violabs.konstellation.dsl.utils.Colors
 import io.violabs.konstellation.dsl.utils.VLoggable
-import io.violabs.konstellation.metaDsl.annotation.DefaultValue
+import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
+import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
 import kotlin.reflect.KClass
 
 /**

@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
  * @property classRef The KClass reference indicating the type of the default value. Defaults to String::class.
  *                    If import is needed, use the fully qualified name.
  */
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.SOURCE)
 annotation class DefaultValue(
     val value: String,
