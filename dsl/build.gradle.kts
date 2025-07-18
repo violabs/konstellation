@@ -33,12 +33,6 @@ dependencies {
 
 tasks.jar {
     archiveBaseName.set("dsl")
-//    dependsOn(subprojects.map { it.tasks.named("classes") })
-//
-//    // Pull in each subproject’s compiled classes & resources
-//    from(subprojects.map { proj ->
-//        proj.extensions.getByType<SourceSetContainer>()["main"].output
-//    })
 }
 
 kover {

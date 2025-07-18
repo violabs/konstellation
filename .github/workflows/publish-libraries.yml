@@ -120,10 +120,8 @@ jobs:
 
       - name: Publish to Digital Ocean Spaces
         env:
-          DIGITAL_OCEAN_SPACES_KEY: ${{ secrets.DIGITAL_OCEAN_SPACES_KEY }}
-          DIGITAL_OCEAN_SPACES_SECRET: ${{ secrets.DIGITAL_OCEAN_SPACES_SECRET }}
-          DIGITAL_OCEAN_SPACES_ENDPOINT: ${{ secrets.DIGITAL_OCEAN_SPACES_ENDPOINT }}
-          DIGITAL_OCEAN_SPACES_BUCKET: ${{ secrets.DIGITAL_OCEAN_SPACES_BUCKET }}
+          DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}
+          DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET }}
         run: |
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
             echo "🏃‍♂️ DRY RUN: Would publish ${{ matrix.library }} library"
