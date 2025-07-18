@@ -125,10 +125,10 @@ jobs:
         run: |
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
             echo "🏃‍♂️ DRY RUN: Would publish ${{ matrix.library }} library"
-            echo "Command would be: ./gradlew ${{ matrix.library }}:publishToDigitalOceanSpaces"
+            echo "Command would be: ./gradlew ${{ matrix.library }}:uploadToDigitalOceanSpaces"
           else
             echo "🚀 Publishing ${{ matrix.library }} library to Digital Ocean Spaces..."
-            ./gradlew ${{ matrix.library }}:publishToDigitalOceanSpaces
+            ./gradlew ${{ matrix.library }}:uploadToDigitalOceanSpaces
             echo "✅ Successfully published ${{ matrix.library }}"
           fi
 
