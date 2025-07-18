@@ -10,7 +10,8 @@ repositories {
 
 dependencies {
 //    ksp(project(":dsl"))
-    ksp("io.violabs.konstellation:dsl:0.0.1")
+//    ksp("io.violabs.konstellation:dsl:0.0.1")
+    ksp(project(":dsl"))
     implementation(project(":meta-dsl"))
     implementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation(project(":core-test"))

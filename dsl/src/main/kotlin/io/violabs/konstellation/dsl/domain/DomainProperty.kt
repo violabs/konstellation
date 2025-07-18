@@ -28,7 +28,8 @@ data class DefaultDomainProperty(
     val index: Int,
     val lastIndex: Int,
     val prop: KSPropertyDeclaration,
-    val singleEntryTransformMap: Map<String, KSClassDeclaration>
+    val singleEntryTransformMap: Map<String, KSClassDeclaration>,
+    val defaultValue: DefaultPropertyValue? = null
 ) : DomainProperty {
     /**
      * The type of the property, converted to a KotlinPoet TypeName.

@@ -111,12 +111,12 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         return getAnnotated(adapter, log, branch) ?: when {
             BOOLEAN == nonNullPropType -> {
                 logger.debug("BooleanProp", tier = 4, branch = branch)
-                BooleanPropSchema(propName, isNullable)
+                BooleanPropSchema(propName, isNullable, adapter.defaultValue)
             }
 
             DEFAULT_TYPE_NAMES.contains(nonNullPropType) -> {
                 logger.debug("DefaultProp", tier = 4, branch = branch)
-                DefaultPropSchema(propName, actualPropertyType, isNullable)
+                DefaultPropSchema(propName, actualPropertyType, isNullable, adapter.defaultValue)
             }
 
             checkCollectionType(adapter, MAP, Map::class) -> {

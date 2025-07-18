@@ -9,9 +9,10 @@ import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
+import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
+import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
-import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 
 /**
  * Adapter for property schema factory, providing details about a property in the DSL.
@@ -21,6 +22,7 @@ import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 class DefaultPropertySchemaFactoryAdapter(
     prop: KSPropertyDeclaration,
     singleEntryTransform: KSClassDeclaration?,
+    override val defaultValue: DefaultPropertyValue? = null
 ) : PropertySchemaFactoryAdapter {
     override val propName: String = prop.simpleName.asString()
     override val actualPropTypeName: TypeName = prop.type.toTypeName()
@@ -28,7 +30,8 @@ class DefaultPropertySchemaFactoryAdapter(
 
     constructor(propertyAdapter: DefaultDomainProperty) : this(
         propertyAdapter.prop,
-        propertyAdapter.singleEntryTransform()
+        propertyAdapter.singleEntryTransform(),
+        propertyAdapter.defaultValue
     )
 
     private val singleEntryTransformAnnotation = singleEntryTransform
@@ -125,7 +128,7 @@ class DefaultPropertySchemaFactoryAdapter(
         return MapDetails(groupType, typeRefs.first(), typeRefs.last())
     }
 
-    private fun getTypeArguments(): List<TypeName>?  {
+    private fun getTypeArguments(): List<TypeName>? {
         if (actualPropTypeName !is ParameterizedTypeName) return null
 
         return actualPropTypeName.typeArguments

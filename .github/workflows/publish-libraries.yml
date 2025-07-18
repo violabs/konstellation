@@ -1,0 +1,229 @@
+name: Publish Libraries
+
+on:
+  workflow_dispatch:
+    inputs:
+      library:
+        description: 'Which library to publish'
+        required: true
+        default: 'dsl'
+        type: choice
+        options:
+          - all
+          - dsl
+          - meta-dsl
+      version_increment:
+        description: 'Version increment type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      dry_run:
+        description: 'Dry run (do not actually publish)'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  determine-libraries:
+    runs-on: ubuntu-latest
+    outputs:
+      libraries: ${{ steps.setup.outputs.libraries }}
+      current_version: ${{ steps.version.outputs.current_version }}
+      new_version: ${{ steps.version.outputs.new_version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup libraries to publish
+        id: setup
+        run: |
+          if [ "${{ github.event.inputs.library }}" = "all" ]; then
+            echo "libraries=[\"dsl\", \"meta-dsl\"]" >> $GITHUB_OUTPUT
+          else
+            echo "libraries=[\"${{ github.event.inputs.library }}\"]" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Determine version
+        id: version
+        run: |
+          # Read current version from build.gradle.kts
+          current_version=$(grep -oP 'version\s*=\s*"\K[^"]+' build.gradle.kts)
+          echo "current_version=$current_version" >> $GITHUB_OUTPUT
+          
+          # Calculate new version
+          IFS='.' read -ra ADDR <<< "$current_version"
+          major="${ADDR[0]}"
+          minor="${ADDR[1]}"
+          patch="${ADDR[2]}"
+          
+          case "${{ github.event.inputs.version_increment }}" in
+            "major")
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            "minor")
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            "patch")
+              patch=$((patch + 1))
+              ;;
+          esac
+          
+          new_version="${major}.${minor}.${patch}"
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+          
+          echo "📋 Current version: $current_version"
+          echo "📈 New version: $new_version"
+
+  publish:
+    needs: determine-libraries
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        library: ${{ fromJSON(needs.determine-libraries.outputs.libraries) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: wrapper
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build and test
+        run: |
+          echo "🔨 Building project..."
+          ./gradlew clean build -x test
+          
+          echo "🧪 Running tests..."
+          ./gradlew test
+
+      - name: Publish to Digital Ocean Spaces
+        env:
+          DIGITAL_OCEAN_SPACES_KEY: ${{ secrets.DIGITAL_OCEAN_SPACES_KEY }}
+          DIGITAL_OCEAN_SPACES_SECRET: ${{ secrets.DIGITAL_OCEAN_SPACES_SECRET }}
+          DIGITAL_OCEAN_SPACES_ENDPOINT: ${{ secrets.DIGITAL_OCEAN_SPACES_ENDPOINT }}
+          DIGITAL_OCEAN_SPACES_BUCKET: ${{ secrets.DIGITAL_OCEAN_SPACES_BUCKET }}
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            echo "🏃‍♂️ DRY RUN: Would publish ${{ matrix.library }} library"
+            echo "Command would be: ./gradlew publishToDigitalOceanSpaces -PlibaryName=${{ matrix.library }}"
+          else
+            echo "🚀 Publishing ${{ matrix.library }} library to Digital Ocean Spaces..."
+            ./gradlew publishToDigitalOceanSpaces -PlibraryName=${{ matrix.library }}
+            echo "✅ Successfully published ${{ matrix.library }}"
+          fi
+
+  update-version:
+    needs: [determine-libraries, publish]
+    runs-on: ubuntu-latest
+    if: github.event.inputs.dry_run != 'true' && needs.publish.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Update version in build.gradle.kts
+        run: |
+          current_version="${{ needs.determine-libraries.outputs.current_version }}"
+          new_version="${{ needs.determine-libraries.outputs.new_version }}"
+          
+          echo "🔄 Updating version from $current_version to $new_version"
+          
+          # Update version in build.gradle.kts
+          sed -i "s/version = \"$current_version\"/version = \"$new_version\"/" build.gradle.kts
+          
+          # Verify the change
+          echo "✅ Version updated:"
+          grep "version.*=" build.gradle.kts
+
+      - name: Commit and push version update
+        run: |
+          current_version="${{ needs.determine-libraries.outputs.current_version }}"
+          new_version="${{ needs.determine-libraries.outputs.new_version }}"
+          libraries="${{ join(fromJSON(needs.determine-libraries.outputs.libraries), ', ') }}"
+          
+          # Check if there are changes to commit
+          if git diff --quiet; then
+            echo "⚠️  No changes detected in build.gradle.kts"
+            exit 0
+          fi
+          
+          # Stage and commit the version change
+          git add build.gradle.kts
+          git commit -m "🔖 Bump version to $new_version
+
+          Published libraries: $libraries
+          Version increment: ${{ github.event.inputs.version_increment }}
+            
+            ✅ Libraries successfully published to Digital Ocean Spaces"
+            
+            # Push directly to main branch
+            echo "📤 Pushing version update to main branch..."
+            git push origin HEAD:main
+            
+            echo "✅ Version $new_version committed and pushed to main branch"
+
+  summary:
+    needs: [determine-libraries, publish, update-version]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Job Summary
+        run: |
+          echo "# 📦 Konstellation Publishing Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow:** ${{ github.workflow }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Dry Run:** ${{ github.event.inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📋 Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- **Libraries:** ${{ join(fromJSON(needs.determine-libraries.outputs.libraries), ', ') }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ needs.determine-libraries.outputs.current_version }} → ${{ needs.determine-libraries.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Increment:** ${{ github.event.inputs.version_increment }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎯 Results" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.publish.result }}" = "success" ]; then
+            echo "✅ **Publishing:** Successful" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Publishing:** Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            echo "🏃‍♂️ **Mode:** Dry run completed" >> $GITHUB_STEP_SUMMARY
+          else
+            if [ "${{ needs.update-version.result }}" = "success" ]; then
+              echo "✅ **Version Update:** Committed to main branch" >> $GITHUB_STEP_SUMMARY
+            elif [ "${{ needs.update-version.result }}" = "skipped" ]; then
+              echo "⏭️ **Version Update:** Skipped (dry run or publish failed)" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **Version Update:** Failed" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi

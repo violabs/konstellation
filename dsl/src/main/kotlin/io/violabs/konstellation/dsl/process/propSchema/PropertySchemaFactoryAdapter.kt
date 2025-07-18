@@ -3,6 +3,7 @@ package io.violabs.konstellation.dsl.process.propSchema
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeName
+import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 
 /**
@@ -24,6 +25,7 @@ interface PropertySchemaFactoryAdapter {
     val groupElementClassDeclaration: KSClassDeclaration?
     var mapDetails: MapDetails?
     val mapValueClassDeclaration: KSClassDeclaration?
+    val defaultValue: DefaultPropertyValue?
 
     fun mapDetails(): MapDetails? = null
 
