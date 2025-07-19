@@ -2,6 +2,8 @@ import io.violabs.plugins.open.secrets.getPropertyOrEnv
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URI
 
+val metaDslVersion: String by rootProject.extra
+
 plugins {
     id("io.gitlab.arturbosch.detekt")
     `java-library`
@@ -12,7 +14,7 @@ plugins {
 }
 
 group = "io.violabs.konstellation"
-version = "0.0.1"
+version = metaDslVersion
 
 repositories {
     mavenCentral()

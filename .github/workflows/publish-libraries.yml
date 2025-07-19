@@ -49,8 +49,26 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          # Read current version from build.gradle.kts
-          current_version=$(grep -oP 'version\s*=\s*"\K[^"]+' build.gradle.kts)
+          library="${{ github.event.inputs.library }}"
+          
+          if [ "$library" = "all" ]; then
+            # For "all", read both versions and ensure they match
+            dsl_version=$(grep -oP 'extra\["dslVersion"\]\s*=\s*"\K[^"]+' build.gradle.kts)
+            meta_dsl_version=$(grep -oP 'extra\["metaDslVersion"\]\s*=\s*"\K[^"]+' build.gradle.kts)
+          
+            if [ "$dsl_version" != "$meta_dsl_version" ]; then
+              echo "❌ Error: dslVersion ($dsl_version) and metaDslVersion ($meta_dsl_version) don't match!"
+              echo "When publishing all libraries, versions must be synchronized."
+              exit 1
+            fi
+          
+            current_version="$dsl_version"
+          elif [ "$library" = "dsl" ]; then
+            current_version=$(grep -oP 'extra\["dslVersion"\]\s*=\s*"\K[^"]+' build.gradle.kts)
+          elif [ "$library" = "meta-dsl" ]; then
+            current_version=$(grep -oP 'extra\["metaDslVersion"\]\s*=\s*"\K[^"]+' build.gradle.kts)
+          fi
+          
           echo "current_version=$current_version" >> $GITHUB_OUTPUT
           
           # Calculate new version
@@ -77,6 +95,7 @@ jobs:
           new_version="${major}.${minor}.${patch}"
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
           
+          echo "📋 Library: $library"
           echo "📋 Current version: $current_version"
           echo "📈 New version: $new_version"
 
@@ -151,15 +170,29 @@ jobs:
         run: |
           current_version="${{ needs.determine-libraries.outputs.current_version }}"
           new_version="${{ needs.determine-libraries.outputs.new_version }}"
+          libraries="${{ join(fromJSON(needs.determine-libraries.outputs.libraries), ', ') }}"
           
-          echo "🔄 Updating version from $current_version to $new_version"
+          echo "🔄 Updating version from $current_version to $new_version for libraries: $libraries"
           
-          # Update version in build.gradle.kts
-          sed -i "s/version = \"$current_version\"/version = \"$new_version\"/" build.gradle.kts
+          # Update versions based on which libraries were published
+          if [[ "$libraries" == *"dsl"* ]]; then
+            echo "📝 Updating dslVersion..."
+            sed -i "s/extra\[\"dslVersion\"\] = \"$current_version\"/extra[\"dslVersion\"] = \"$new_version\"/" build.gradle.kts
+          fi
           
-          # Verify the change
-          echo "✅ Version updated:"
-          grep "version.*=" build.gradle.kts
+          if [[ "$libraries" == *"meta-dsl"* ]]; then
+            echo "📝 Updating metaDslVersion..."
+            sed -i "s/extra\[\"metaDslVersion\"\] = \"$current_version\"/extra[\"metaDslVersion\"] = \"$new_version\"/" build.gradle.kts
+          fi
+          
+          # Verify the changes
+          echo "✅ Version updates:"
+          if [[ "$libraries" == *"dsl"* ]]; then
+            grep "dslVersion" build.gradle.kts
+          fi
+          if [[ "$libraries" == *"meta-dsl"* ]]; then
+            grep "metaDslVersion" build.gradle.kts
+          fi
 
       - name: Commit and push version update
         run: |

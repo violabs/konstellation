@@ -2,6 +2,8 @@ import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import io.violabs.plugins.open.secrets.getPropertyOrEnv
 
+val dslVersion: String by rootProject.extra
+
 plugins {
     id("io.gitlab.arturbosch.detekt")
     `java-library`
@@ -12,7 +14,7 @@ plugins {
 }
 
 group = "io.violabs.konstellation"
-version = "0.0.1"
+version = dslVersion
 
 repositories {
     mavenCentral()
