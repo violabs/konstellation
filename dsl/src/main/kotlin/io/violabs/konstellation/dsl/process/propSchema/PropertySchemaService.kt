@@ -51,7 +51,7 @@ class DefaultPropertySchemaService(
                 )
             }
             .map(propertySchemaFactory::createPropertySchemaFactoryAdapter)
-            .map(propertySchemaFactory::determinePropertySchema)
+            .map { propertySchemaFactory.determinePropertySchema(it, debug = logger.debugEnabled()) }
             .toList()
     }
 

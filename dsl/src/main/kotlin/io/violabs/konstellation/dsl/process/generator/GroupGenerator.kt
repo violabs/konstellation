@@ -21,9 +21,9 @@ abstract class GroupGenerator<T>(
     val config: Config<T>,
     val annotationDecorator: AnnotationDecorator
 ) : VLoggable {
-    init {
-        logger.enableDebug()
-    }
+//    init {
+//        logger.enableDebug()
+//    }
 
     /**
      * Configuration class for the group generator.

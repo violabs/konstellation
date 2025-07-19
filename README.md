@@ -28,8 +28,8 @@ plugins {
 }
 
 dependencies {
-    implementation("io.violabs.konstellation:meta-dsl:0.0.2")
-    ksp("io.violabs.konstellation:dsl:0.0.2")
+    implementation("io.violabs.konstellation:meta-dsl:0.0.3")
+    ksp("io.violabs.konstellation:dsl:0.0.3")
 }
 
 // Configure source sets for generated code
@@ -117,7 +117,9 @@ val service = serviceConfig {
 
 ## Development & Debugging
 
-Konstellation includes sophisticated logging to help you understand the generation process:
+In order to run debug, you can use `./gradlew clean build -Ddebug=true`
+
+Konstellation includes sophisticated logging to help you understand the generation process. 
 
 ```
 konstellation DEBUG [····DSL_BUILDER] *>> +++ DOMAIN: BloomBuildPlannerQueue +++
@@ -161,8 +163,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 - [ ] Support for generic types
 - [ ] Validation DSL generation
-- [ ] IDE plugin for better development experience
-- [ ] Performance optimizations
+- [ ] Fix logging issues
 
 ## License
 

@@ -7,9 +7,9 @@ import io.violabs.konstellation.dsl.utils.VLoggable
  * Handles adding annotations to DSL builders.
  */
 class AnnotationDecorator : VLoggable {
-    init {
-        logger.enableDebug()
-    }
+//    init {
+//        logger.enableDebug()
+//    }
 
     /**
      * Creates a DSL marker with the given class, if available.

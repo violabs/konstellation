@@ -55,9 +55,9 @@ class DefaultDslGenerator(
     override val builderGenerator: DefaultBuilderGenerator = DefaultBuilderGenerator(),
     override val rootDslAccessorGenerator: DefaultRootDslAccessorGenerator = DefaultRootDslAccessorGenerator()
 ) : DslGenerator<DefaultPropertySchemaFactoryAdapter, DefaultDomainProperty> {
-    init {
-        logger.enableDebug()
-    }
+//    init {
+//        logger.enableDebug()
+//    }
 
     /**
      * This will generate Custom DSL Builders based on the annotation, as well as the

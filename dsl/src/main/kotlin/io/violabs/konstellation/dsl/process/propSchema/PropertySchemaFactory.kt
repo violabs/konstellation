@@ -62,12 +62,12 @@ interface PropertySchemaFactory<T : PropertySchemaFactoryAdapter, P : DomainProp
      *
      * @param adapter the property adapter being processed
      * @param isLast whether this is the last parameter being generated
-     * @param log enable debug logging for this invocation
+     * @param debug enable debug logging for this invocation
      */
     fun determinePropertySchema(
         adapter: T,
         isLast: Boolean = false,
-        log: Boolean = true
+        debug: Boolean = false
     ): DslPropSchema
 }
 
@@ -77,9 +77,9 @@ interface PropertySchemaFactory<T : PropertySchemaFactoryAdapter, P : DomainProp
  */
 class DefaultPropertySchemaFactory :
     AbstractPropertySchemaFactory<DefaultPropertySchemaFactoryAdapter, DefaultDomainProperty>() {
-    init {
-        logger.enableDebug()
-    }
+//    init {
+//        logger.enableDebug()
+//    }
 
     override fun createPropertySchemaFactoryAdapter(
         propertyAdapter: DefaultDomainProperty
@@ -96,8 +96,8 @@ class DefaultPropertySchemaFactory :
  */
 abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P : DomainProperty> :
     PropertySchemaFactory<T, P> {
-    override fun determinePropertySchema(adapter: T, isLast: Boolean, log: Boolean): DslPropSchema {
-        val logger = logger.copy(isDebugEnabled = log)
+    override fun determinePropertySchema(adapter: T, isLast: Boolean, debug: Boolean): DslPropSchema {
+        val logger = logger.copy(isDebugEnabled = debug)
         val propName = adapter.propName
         val actualPropertyType: TypeName = adapter.actualPropTypeName
         val isNullable = actualPropertyType.isNullable
@@ -108,7 +108,7 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         logger.debug("mapping '$propName'", tier = 3, branch = branch)
         logger.debug("nullable: $isNullable", tier = 4, branch = branch)
 
-        return getAnnotated(adapter, log, branch) ?: when {
+        return getAnnotated(adapter, debug, branch) ?: when {
             BOOLEAN == nonNullPropType -> {
                 logger.debug("BooleanProp", tier = 4, branch = branch)
                 BooleanPropSchema(propName, isNullable, adapter.defaultValue)
