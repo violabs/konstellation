@@ -1,5 +1,6 @@
 package io.violabs.konstellation.generateTest
 
+import io.violabs.konstellation.generateTest.nested.Version
 import io.violabs.konstellation.metaDsl.annotation.DefaultValue
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 
@@ -21,5 +22,7 @@ data class StarShip(
     val areaCodes: Map<String, String>? = null,
     val roomMap: Map<String, Passenger>? = null,
     @DefaultValue("DEFAULT")
-    val defaultString: String = "DEFAULT"
+    val defaultString: String = "DEFAULT",
+    @DefaultValue("Version.V1", Version::class)
+    val version: Version = Version.V1
 )

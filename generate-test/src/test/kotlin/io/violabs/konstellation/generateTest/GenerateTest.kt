@@ -1,6 +1,7 @@
 package io.violabs.konstellation.generateTest
 
 import io.violabs.geordi.UnitSim
+import io.violabs.konstellation.generateTest.nested.Version
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
@@ -49,7 +50,8 @@ class GenerateTest : UnitSim() {
                         "2" to riker
                     ),
                     notes = listOf("Needs some work"),
-                    defaultString = "DEFAULT"
+                    defaultString = "DEFAULT",
+                    version = Version.V1
                 )
             }
 

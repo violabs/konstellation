@@ -145,7 +145,7 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
             else -> {
                 logger.warn("Property '$propName' of type '${actualPropertyType}' " +
                     "could not be mapped to a known DSLParam type. Using DefaultParam as a fallback.")
-                val param = DefaultPropSchema(propName, actualPropertyType, isNullable)
+                val param = DefaultPropSchema(propName, actualPropertyType, isNullable, adapter.defaultValue)
                 logger.debug("-> DefaultProp (fallback)", tier = 4, branch = branch)
                 param
             }
@@ -283,7 +283,7 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         logger.warn(
             "Attempted to create MapProp for unsupported type '$actualPropertyType'. Falling back to DefaultProp."
         )
-        return DefaultPropSchema(propName, actualPropertyType, adapter.hasNullableAssignment)
+        return DefaultPropSchema(propName, actualPropertyType, adapter.hasNullableAssignment, adapter.defaultValue)
     }
 
     /**
@@ -303,6 +303,6 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         logger.warn(
             "Attempted to create ListProp for unsupported type '$actualPropertyType'. Falling back to DefaultProp."
         )
-        return DefaultPropSchema(propName, actualPropertyType, adapter.hasNullableAssignment)
+        return DefaultPropSchema(propName, actualPropertyType, adapter.hasNullableAssignment, adapter.defaultValue)
     }
 }
