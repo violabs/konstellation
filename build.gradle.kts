@@ -21,7 +21,7 @@ version = "0.0.1"
 
 
 extra["dslVersion"] = "0.0.3"
-extra["metaDslVersion"] = "0.0.2"
+extra["metaDslVersion"] = "0.0.3"
 
 java {
     toolchain {
