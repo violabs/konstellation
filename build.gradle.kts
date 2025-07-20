@@ -18,8 +18,8 @@ plugins {
 
 group = "io.violabs.konstellation"
 
-extra["dslVersion"] = "0.0.3"
-extra["metaDslVersion"] = "0.0.3"
+extra["dslVersion"] = "0.0.4"
+extra["metaDslVersion"] = "0.0.4"
 
 java {
     toolchain {
