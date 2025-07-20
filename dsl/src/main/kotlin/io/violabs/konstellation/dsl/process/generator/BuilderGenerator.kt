@@ -238,7 +238,7 @@ class DefaultBuilderGenerator(
         logger.debug("requireCollectionNotEmpty: $hasCollectionRequireNotEmpty", tier = 1, branch = true)
         logger.debug("requireMapNotEmpty: $hasMapRequireNotEmpty", tier = 1, branch = true)
 
-        val defaultValueImports = schemas
+        val defaultValueImports: Set<String> = schemas
             .mapNotNull { it.defaultValue?.importString() }
             .toSet()
 
@@ -251,9 +251,9 @@ class DefaultBuilderGenerator(
                     hasCollectionRequireNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireCollectionNotEmpty"
                 )
                 addImportIf(hasMapRequireNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireMapNotEmpty")
-//                defaultValueImports.forEach {
-//
-//                }
+                defaultValueImports.forEach {
+                    addImport(it)
+                }
                 className = domainConfig.fileClassName
                 typeAliases(*typeAliases.toTypedArray())
                 types(builderContent)
