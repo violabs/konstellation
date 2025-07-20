@@ -23,6 +23,7 @@ import io.violabs.konstellation.dsl.schema.DslPropSchema
 import io.violabs.konstellation.dsl.utils.VLoggable
 import io.violabs.konstellation.dsl.utils.isGroupDsl
 import io.violabs.konstellation.dsl.utils.mapGroupType
+import kotlin.reflect.KClass
 
 /** * Interface for generating DSL builders.
  * This interface defines the contract for generating DSL builder files based on domain configurations.
@@ -232,6 +233,11 @@ class DefaultBuilderGenerator(
         logger.debug("requireCollectionNotEmpty: $hasCollectionRequireNotEmpty", tier = 1, branch = true)
         logger.debug("requireMapNotEmpty: $hasMapRequireNotEmpty", tier = 1, branch = true)
 
+        val defaultValueImports = schemas
+            .mapNotNull { it.defaultValue?.importString() }
+            .toSet()
+
+        logger.debug("defaultValueImports: $defaultValueImports", tier = 1, branch = true)
 
         return kotlinPoet {
             file {
@@ -240,6 +246,9 @@ class DefaultBuilderGenerator(
                     hasCollectionRequireNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireCollectionNotEmpty"
                 )
                 addImportIf(hasMapRequireNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireMapNotEmpty")
+//                defaultValueImports.forEach {
+//
+//                }
                 className = domainConfig.fileClassName
                 typeAliases(*typeAliases.toTypedArray())
                 types(builderContent)

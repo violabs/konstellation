@@ -23,6 +23,6 @@ data class StarShip(
     val roomMap: Map<String, Passenger>? = null,
     @DefaultValue("DEFAULT")
     val defaultString: String = "DEFAULT",
-    @DefaultValue("Version.V1", Version::class)
+    @DefaultValue("Version.V1", packageName = "io.violabs.konstellation.generateTest.nested", className = "Version")
     val version: Version = Version.V1
 )

@@ -1,7 +1,5 @@
 package io.violabs.konstellation.metaDsl.annotation
 
-import kotlin.reflect.KClass
-
 /**
  * Annotation to specify a default value for a property in the generated DSL.
  *
@@ -9,4 +7,8 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.SOURCE)
-annotation class DefaultValue(val value: String, val classRef: KClass<*> = String::class)
+annotation class DefaultValue(
+    val value: String,
+    val packageName: String = "kotlin",
+    val className: String = "String"
+)

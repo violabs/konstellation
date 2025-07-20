@@ -24,6 +24,7 @@ repositories {
 dependencies {
     implementation(project(":meta-dsl"))
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.squareup:kotlinpoet:2.1.0")
     implementation("com.squareup:kotlinpoet-ksp:2.1.0")
