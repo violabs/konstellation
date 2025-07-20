@@ -44,6 +44,7 @@ interface BuilderGenerator : DslFileWriter, VLoggable {
         domain: KSClassDeclaration,
         builderConfig: BuilderConfig,
         singleEntryTransformByClassName: Map<String, KSClassDeclaration>,
+        debug: Boolean
     )
 }
 
@@ -66,11 +67,13 @@ class DefaultBuilderGenerator(
         domain: KSClassDeclaration,
         builderConfig: BuilderConfig,
         singleEntryTransformByClassName: Map<String, KSClassDeclaration>,
+        debug: Boolean
     ) {
         val domainConfig = DomainConfig(
             builderConfig,
             singleEntryTransformByClassName,
-            domain
+            domain,
+            debug
         )
         generateFilesForDsl(domainConfig, codeGenerator)
     }
@@ -107,6 +110,7 @@ class DefaultBuilderGenerator(
     }
 
     private fun debugLog(domainConfig: DomainConfig, runnable: () -> Unit) {
+        VLoggable.setGlobalDebug(domainConfig.debug)
         logger.debug("-- generating builder --", tier = 0)
         logger.debug("+++ DOMAIN: ${domainConfig.domainClassName}  +++")
         logger.debug("package: ${domainConfig.packageName}", tier = 1, branch = true)
@@ -116,6 +120,8 @@ class DefaultBuilderGenerator(
         runnable()
 
         logger.debug("file written: ${domainConfig.fileClassName}", tier = 1)
+
+        VLoggable.resetGlobalDebug()
     }
 
     /**
@@ -232,6 +238,11 @@ class DefaultBuilderGenerator(
         logger.debug("requireCollectionNotEmpty: $hasCollectionRequireNotEmpty", tier = 1, branch = true)
         logger.debug("requireMapNotEmpty: $hasMapRequireNotEmpty", tier = 1, branch = true)
 
+        val defaultValueImports: Set<String> = schemas
+            .mapNotNull { it.defaultValue?.importString() }
+            .toSet()
+
+        logger.debug("defaultValueImports: $defaultValueImports", tier = 1, branch = true)
 
         return kotlinPoet {
             file {
@@ -240,6 +251,9 @@ class DefaultBuilderGenerator(
                     hasCollectionRequireNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireCollectionNotEmpty"
                 )
                 addImportIf(hasMapRequireNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireMapNotEmpty")
+                defaultValueImports.forEach {
+                    addImport(it)
+                }
                 className = domainConfig.fileClassName
                 typeAliases(*typeAliases.toTypedArray())
                 types(builderContent)

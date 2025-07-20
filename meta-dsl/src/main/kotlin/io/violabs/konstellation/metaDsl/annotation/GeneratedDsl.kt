@@ -8,7 +8,8 @@ package io.violabs.konstellation.metaDsl.annotation
 annotation class GeneratedDsl(
     val withListGroup: Boolean = false,
     val withMapGroup: String = MapGroupTypes.NONE,
-    val isRoot: Boolean = false
+    val isRoot: Boolean = false,
+    val debug: Boolean = false
 ) {
     /**
      * Constants representing the different types of map groups.

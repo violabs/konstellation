@@ -5,5 +5,8 @@ import com.squareup.kotlinpoet.CodeBlock
 data class DefaultPropertyValue(
     val rawValue: String,
     val codeBlock: CodeBlock,
-    val classRef: String = "java.lang.String"
-)
+    val packageName: String,
+    val className: String
+) {
+    fun importString(): String = "$packageName.$className"
+}

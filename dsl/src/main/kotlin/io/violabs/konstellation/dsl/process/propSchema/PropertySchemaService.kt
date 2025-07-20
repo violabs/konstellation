@@ -8,6 +8,7 @@ import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
 import io.violabs.konstellation.dsl.domain.DomainConfig
 import io.violabs.konstellation.dsl.domain.DomainProperty
 import io.violabs.konstellation.dsl.schema.DslPropSchema
+import io.violabs.konstellation.dsl.utils.Colors
 import io.violabs.konstellation.dsl.utils.VLoggable
 import io.violabs.konstellation.metaDsl.annotation.DefaultValue
 
@@ -38,8 +39,8 @@ class DefaultPropertySchemaService(
             .mapIndexed { i, prop ->
                 val defaultValue = prop.extractDefaultPropertyValue()
 
-                logger.debug(
-                    "Property '${prop.simpleName.asString()}' has @DefaultValue: $defaultValue",
+                if (defaultValue != null) logger.debug(
+                    "Property '${prop.simpleName.asString()}' has ${Colors.yellow("@DefaultValue")}: $defaultValue",
                     tier = 2, branch = true
                 )
 
@@ -70,24 +71,30 @@ class DefaultPropertySchemaService(
             ?.firstOrNull { it.name?.asString() == DefaultValue::value.name }
             ?.value as? String
 
-        logger.debug("Raw default value from annotation: '$raw'", tier = 2)
+        if (raw != null) logger.debug("Raw default value from annotation: '$raw'", tier = 2)
 
-        val classRef = ann?.arguments
-            ?.firstOrNull { it.name?.asString() == DefaultValue::classRef.name }
+        val packageName = ann?.arguments
+            ?.firstOrNull { it.name?.asString() == DefaultValue::packageName.name }
             ?.value
+            ?.toString()
 
-        logger.debug("Class ref from annotation: '$classRef'", tier = 2)
+        val className = ann?.arguments
+            ?.firstOrNull { it.name?.asString() == DefaultValue::className.name }
+            ?.value
+            ?.toString()
 
-        if (raw == null || classRef == null) return null
+        if (raw == null || packageName == null || className == null) return null
+
+        logger.debug("Class reference: $packageName.$className", tier = 2)
 
         // decide whether this raw should be a literal or raw code:
         // here we assume it’s raw Kotlin snippet (e.g. "listOf(1,2,3)"); adjust to %S if literal
-        val isStringClass = classRef.toString() == "String"
+        val isStringClass = className == "String"
         logger.debug("Is String class: $isStringClass", tier = 2)
         val template = if (isStringClass) "%S" else "%L"
         val cb = CodeBlock.of(template, raw)
         logger.debug("CodeBlock for default value: $cb", tier = 2)
 
-        return DefaultPropertyValue(rawValue = raw, codeBlock = cb, classRef = classRef.toString())
+        return DefaultPropertyValue(rawValue = raw, codeBlock = cb, packageName, className)
     }
 }

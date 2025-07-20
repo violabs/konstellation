@@ -20,7 +20,7 @@ internal object Colors {
 internal object Logging {
     const val LOGO = "${Colors.GREEN}konstellation${Colors.RESET}"
     const val DELIMITER = "${Colors.PURPLE}*${Colors.CYAN}>>${Colors.RESET}"
-    const val ID_TEMPLATE = "${Colors.CYAN}[${Colors.RESET}%s${Colors.CYAN}]${Colors.RESET}"
+    const val ID_TEMPLATE = "${Colors.CYAN}[${Colors.RESET}%-30s${Colors.CYAN}]${Colors.RESET}"
     const val INFO = "${Colors.CYAN}INFO ${Colors.RESET}"
     const val WARN = "${Colors.YELLOW}WARN ${Colors.RESET}"
     const val DEBUG = "${Colors.BLUE}DEBUG${Colors.RESET}"
@@ -30,26 +30,22 @@ internal object Logging {
     const val TUTORIAL = "TUTORIAL"
 }
 
-// Fixed padding length to ensure consistent log formatting
-private const val FIXED_PADDING_LENGTH = 25
-private val FRONT_LOADED_SPACES = System.getProperty("frontLoadedSpaces")?.toBoolean() ?: true
-private const val PADDING_CHAR = '·' // Simple middle dot for padding
+private const val MAX_NAME_LENGTH = 30
+private const val MAX_TAKE_LENGTH = MAX_NAME_LENGTH - 3 // For "..."
 
 @Suppress("TooManyFunctions")
 data class Logger(
     private val logId: String,
-    private var isDebugEnabled: Boolean = true,
-    private var isWarningEnabled: Boolean = true
+    private var isDebugEnabled: Boolean = false,
+    private var isWarningEnabled: Boolean = false
 ) {
     private val activeBranches = mutableSetOf<Int>()
 
-    // Apply fixed padding to ensure consistent log formatting
-    private val formattedName: String = if (logId.length < FIXED_PADDING_LENGTH) {
-        var padding = PADDING_CHAR.toString().repeat(FIXED_PADDING_LENGTH - logId.length)
-        padding = "${Colors.PURPLE}$padding${Colors.RESET}"
-        if (FRONT_LOADED_SPACES) "$padding$logId" else "$logId$padding"
-    } else {
-        logId
+
+    // Simplified - just truncate if too long, no fancy padding
+    private val formattedName: String = when {
+        logId.length > MAX_NAME_LENGTH -> logId.take(MAX_TAKE_LENGTH) + "..."
+        else -> logId
     }
 
     fun enableDebug(): Logger = apply {
@@ -61,6 +57,8 @@ data class Logger(
     }
 
     fun debugEnabled(): Boolean = isDebugEnabled
+
+    fun globalDebugEnabled(): Boolean = System.getProperty("debug")?.toBoolean() ?: false
 
     fun disableWarning(): Logger = apply {
         isWarningEnabled = false
@@ -135,7 +133,7 @@ data class Logger(
 }
 
 private val LOG_MAP = mutableMapOf<String, Logger>()
-private val DEBUG_ENABLED = System.getProperty("debug")?.toBoolean() ?: false
+private var DEBUG_ENABLED = System.getProperty("debug")?.toBoolean() ?: false
 private val WARNING_ENABLED = System.getProperty("warn")?.toBoolean() ?: true
 
 interface VLoggable {
@@ -151,4 +149,17 @@ interface VLoggable {
                 logger
             }
         }
+
+    companion object {
+        fun setGlobalDebug(enabled: Boolean) {
+            DEBUG_ENABLED = enabled
+            LOG_MAP.values.forEach { logger ->
+                if (enabled) logger.enableDebug() else logger.disableDebug()
+            }
+        }
+
+        fun resetGlobalDebug() {
+            setGlobalDebug(System.getProperty("debug")?.toBoolean() ?: false)
+        }
+    }
 }

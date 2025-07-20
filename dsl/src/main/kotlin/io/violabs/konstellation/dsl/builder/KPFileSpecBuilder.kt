@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.TypeSpec
  * This builder allows you to define the class name, imports, type aliases, types, and functions
  * that will be included in the generated Kotlin file.
  */
+@Suppress("TooManyFunctions")
 class KPFileSpecBuilder {
     var className: ClassName? = null
     private var imports = mutableListOf<Pair<String, String>>()
@@ -72,6 +73,10 @@ class KPFileSpecBuilder {
         imports.add(className.packageName to className.simpleName)
     }
 
+    fun addImport(className: String) {
+        imports.add(className.substringBeforeLast(".") to className.substringAfterLast('.'))
+    }
+
     /**
      * Adds an import to the file.
      *
@@ -106,7 +111,7 @@ class KPFileSpecBuilder {
      */
     fun build(): FileSpec {
         val className = requireNotNull(className) { "File - Class name must be set" }
-        var spec = FileSpec
+        var spec: FileSpec.Builder = FileSpec
             .builder(className)
             .indent("    ")
 

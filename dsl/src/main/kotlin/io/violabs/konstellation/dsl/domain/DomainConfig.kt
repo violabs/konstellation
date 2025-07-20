@@ -31,6 +31,7 @@ open class DomainConfig(
     val builderConfig: BuilderConfig,
     val singleEntryTransformByClassName: Map<String, KSClassDeclaration>,
     var domain: KSClassDeclaration,
+    val debug: Boolean
 ) {
     open val dslBuilderPostfix: String = "DslBuilder"
     open val dslBuildFilePostfix: String = "Dsl"
