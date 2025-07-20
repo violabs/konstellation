@@ -5,7 +5,8 @@ import io.violabs.konstellation.metaDsl.annotation.DefaultValue
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 
 @GeneratedDsl(
-    isRoot = true
+    isRoot = true,
+    debug = true
 )
 data class StarShip(
     val name: String,

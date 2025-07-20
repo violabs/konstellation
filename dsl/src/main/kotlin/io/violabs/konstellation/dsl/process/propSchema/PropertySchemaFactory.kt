@@ -62,12 +62,10 @@ interface PropertySchemaFactory<T : PropertySchemaFactoryAdapter, P : DomainProp
      *
      * @param adapter the property adapter being processed
      * @param isLast whether this is the last parameter being generated
-     * @param debug enable debug logging for this invocation
      */
     fun determinePropertySchema(
         adapter: T,
-        isLast: Boolean = false,
-        debug: Boolean = false
+        isLast: Boolean = false
     ): DslPropSchema
 }
 
@@ -77,9 +75,6 @@ interface PropertySchemaFactory<T : PropertySchemaFactoryAdapter, P : DomainProp
  */
 class DefaultPropertySchemaFactory :
     AbstractPropertySchemaFactory<DefaultPropertySchemaFactoryAdapter, DefaultDomainProperty>() {
-//    init {
-//        logger.enableDebug()
-//    }
 
     override fun createPropertySchemaFactoryAdapter(
         propertyAdapter: DefaultDomainProperty
@@ -96,8 +91,7 @@ class DefaultPropertySchemaFactory :
  */
 abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P : DomainProperty> :
     PropertySchemaFactory<T, P> {
-    override fun determinePropertySchema(adapter: T, isLast: Boolean, debug: Boolean): DslPropSchema {
-        val logger = logger.copy(isDebugEnabled = debug)
+    override fun determinePropertySchema(adapter: T, isLast: Boolean): DslPropSchema {
         val propName = adapter.propName
         val actualPropertyType: TypeName = adapter.actualPropTypeName
         val isNullable = actualPropertyType.isNullable
@@ -108,7 +102,7 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         logger.debug("mapping '$propName'", tier = 3, branch = branch)
         logger.debug("nullable: $isNullable", tier = 4, branch = branch)
 
-        return getAnnotated(adapter, debug, branch) ?: when {
+        return getAnnotated(adapter, branch) ?: when {
             BOOLEAN == nonNullPropType -> {
                 logger.debug("BooleanProp", tier = 4, branch = branch)
                 BooleanPropSchema(propName, isNullable, adapter.defaultValue)
@@ -152,9 +146,9 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         }
     }
 
-    private fun getAnnotated(adapter: T, log: Boolean, branch: Boolean): DslPropSchema? {
+    private fun getAnnotated(adapter: T, branch: Boolean): DslPropSchema? {
         if (adapter.hasSingleEntryTransform) {
-            return buildSingleTransformProp(adapter, log, branch)
+            return buildSingleTransformProp(adapter, branch)
         }
 
         val propertyNonNullableClassName: ClassName? = adapter.propertyNonNullableClassName
@@ -182,7 +176,6 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
 
     private fun buildSingleTransformProp(
         adapter: PropertySchemaFactoryAdapter,
-        log: Boolean = true,
         branch: Boolean = true
     ): DslPropSchema {
         val transformType = adapter.transformType
@@ -196,7 +189,7 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
             return DefaultPropSchema(adapter)
         }
 
-        if (log) logger.debug("-> SingleTransformProp", tier = 4, branch = branch)
+        logger.debug("-> SingleTransformProp", tier = 4, branch = branch)
         return SingleTransformPropSchema(adapter)
     }
 

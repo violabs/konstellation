@@ -22,7 +22,7 @@ import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
 class DefaultPropertySchemaFactoryAdapter(
     prop: KSPropertyDeclaration,
     singleEntryTransform: KSClassDeclaration?,
-    override val defaultValue: DefaultPropertyValue? = null
+    override val defaultValue: DefaultPropertyValue? = null,
 ) : PropertySchemaFactoryAdapter {
     override val propName: String = prop.simpleName.asString()
     override val actualPropTypeName: TypeName = prop.type.toTypeName()

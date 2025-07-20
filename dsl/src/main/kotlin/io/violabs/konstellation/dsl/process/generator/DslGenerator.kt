@@ -55,9 +55,6 @@ class DefaultDslGenerator(
     override val builderGenerator: DefaultBuilderGenerator = DefaultBuilderGenerator(),
     override val rootDslAccessorGenerator: DefaultRootDslAccessorGenerator = DefaultRootDslAccessorGenerator()
 ) : DslGenerator<DefaultPropertySchemaFactoryAdapter, DefaultDomainProperty> {
-//    init {
-//        logger.enableDebug()
-//    }
 
     /**
      * This will generate Custom DSL Builders based on the annotation, as well as the
@@ -91,13 +88,19 @@ class DefaultDslGenerator(
         logger.debug("------------------------ GENERATE for project: ${builderConfig.projectRootClasspath}", tier = 0)
         builderConfig.printDebug()
 
-        val generatedBuilderDSL = getGeneratedDslAnnotation(resolver)
+        val generatedBuilderDSL: List<KSClassDeclaration> = getGeneratedDslAnnotation(resolver)
 
         val singleEntryTransformByClassName: Map<String, KSClassDeclaration> =
             getSingleEntryTransformByClassName(resolver)
 
         generatedBuilderDSL.forEach { domain ->
-            builderGenerator.generate(codeGenerator, domain, builderConfig, singleEntryTransformByClassName)
+            builderGenerator.generate(
+                codeGenerator,
+                domain,
+                builderConfig,
+                singleEntryTransformByClassName,
+                domain.isDebug()
+            )
         }
 
         val rootClasses = generatedBuilderDSL
@@ -166,6 +169,16 @@ class DefaultDslGenerator(
             annotation
                 .arguments
                 .firstOrNull { it.name?.asString() == GeneratedDsl::isRoot.name }
+                ?.value == true
+        }
+
+    private fun KSClassDeclaration.isDebug(): Boolean = this
+        .annotations
+        .filter { it.shortName.asString() == GeneratedDsl::class.simpleName }
+        .any { annotation ->
+            annotation
+                .arguments
+                .firstOrNull { it.name?.asString() == GeneratedDsl::debug.name }
                 ?.value == true
         }
 }

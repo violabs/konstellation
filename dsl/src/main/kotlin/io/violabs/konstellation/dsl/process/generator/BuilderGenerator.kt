@@ -23,7 +23,6 @@ import io.violabs.konstellation.dsl.schema.DslPropSchema
 import io.violabs.konstellation.dsl.utils.VLoggable
 import io.violabs.konstellation.dsl.utils.isGroupDsl
 import io.violabs.konstellation.dsl.utils.mapGroupType
-import kotlin.reflect.KClass
 
 /** * Interface for generating DSL builders.
  * This interface defines the contract for generating DSL builder files based on domain configurations.
@@ -45,6 +44,7 @@ interface BuilderGenerator : DslFileWriter, VLoggable {
         domain: KSClassDeclaration,
         builderConfig: BuilderConfig,
         singleEntryTransformByClassName: Map<String, KSClassDeclaration>,
+        debug: Boolean
     )
 }
 
@@ -67,11 +67,13 @@ class DefaultBuilderGenerator(
         domain: KSClassDeclaration,
         builderConfig: BuilderConfig,
         singleEntryTransformByClassName: Map<String, KSClassDeclaration>,
+        debug: Boolean
     ) {
         val domainConfig = DomainConfig(
             builderConfig,
             singleEntryTransformByClassName,
-            domain
+            domain,
+            debug
         )
         generateFilesForDsl(domainConfig, codeGenerator)
     }
@@ -108,6 +110,7 @@ class DefaultBuilderGenerator(
     }
 
     private fun debugLog(domainConfig: DomainConfig, runnable: () -> Unit) {
+        VLoggable.setGlobalDebug(domainConfig.debug)
         logger.debug("-- generating builder --", tier = 0)
         logger.debug("+++ DOMAIN: ${domainConfig.domainClassName}  +++")
         logger.debug("package: ${domainConfig.packageName}", tier = 1, branch = true)
@@ -117,6 +120,8 @@ class DefaultBuilderGenerator(
         runnable()
 
         logger.debug("file written: ${domainConfig.fileClassName}", tier = 1)
+
+        VLoggable.resetGlobalDebug()
     }
 
     /**

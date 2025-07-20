@@ -28,8 +28,8 @@ plugins {
 }
 
 dependencies {
-    implementation("io.violabs.konstellation:meta-dsl:0.0.4")
-    ksp("io.violabs.konstellation:dsl:0.0.4")
+    implementation("io.violabs.konstellation:meta-dsl:0.0.6")
+    ksp("io.violabs.konstellation:dsl:0.0.6")
 }
 
 // Configure source sets for generated code

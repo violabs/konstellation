@@ -58,6 +58,8 @@ data class Logger(
 
     fun debugEnabled(): Boolean = isDebugEnabled
 
+    fun globalDebugEnabled(): Boolean = System.getProperty("debug")?.toBoolean() ?: false
+
     fun disableWarning(): Logger = apply {
         isWarningEnabled = false
     }
@@ -131,7 +133,7 @@ data class Logger(
 }
 
 private val LOG_MAP = mutableMapOf<String, Logger>()
-private val DEBUG_ENABLED = System.getProperty("debug")?.toBoolean() ?: false
+private var DEBUG_ENABLED = System.getProperty("debug")?.toBoolean() ?: false
 private val WARNING_ENABLED = System.getProperty("warn")?.toBoolean() ?: true
 
 interface VLoggable {
@@ -147,4 +149,17 @@ interface VLoggable {
                 logger
             }
         }
+
+    companion object {
+        fun setGlobalDebug(enabled: Boolean) {
+            DEBUG_ENABLED = enabled
+            LOG_MAP.values.forEach { logger ->
+                if (enabled) logger.enableDebug() else logger.disableDebug()
+            }
+        }
+
+        fun resetGlobalDebug() {
+            setGlobalDebug(System.getProperty("debug")?.toBoolean() ?: false)
+        }
+    }
 }

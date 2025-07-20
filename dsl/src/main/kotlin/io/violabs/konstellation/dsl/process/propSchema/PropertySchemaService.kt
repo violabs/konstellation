@@ -11,7 +11,6 @@ import io.violabs.konstellation.dsl.schema.DslPropSchema
 import io.violabs.konstellation.dsl.utils.Colors
 import io.violabs.konstellation.dsl.utils.VLoggable
 import io.violabs.konstellation.metaDsl.annotation.DefaultValue
-import kotlin.reflect.KClass
 
 /**
  * Service to handle the conversion of domain properties into DSL property schemas.
@@ -53,7 +52,7 @@ class DefaultPropertySchemaService(
                 )
             }
             .map(propertySchemaFactory::createPropertySchemaFactoryAdapter)
-            .map { propertySchemaFactory.determinePropertySchema(it, debug = logger.debugEnabled()) }
+            .map(propertySchemaFactory::determinePropertySchema)
             .toList()
     }
 
