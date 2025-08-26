@@ -46,6 +46,13 @@ abstract class DefaultKotlinPoetSpec : KotlinPoetSpec {
     fun private() = accessModifier(KModifier.PRIVATE)
 
     /**
+     * Add a protected access modifier to this spec.
+     *
+     * @return This spec with the protected access modifier added.
+     */
+    fun protected() = accessModifier(KModifier.PROTECTED)
+
+    /**
      * Add a public access modifier to this spec.
      *
      * @return This spec with the public access modifier added.

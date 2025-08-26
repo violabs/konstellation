@@ -17,7 +17,6 @@ class MapGroupPropSchema(
     val mapKeyType: TypeName = STRING,
     val mapValueType: TypeName,
     override val nullableAssignment: Boolean = true,
-    private val kdoc: String? = null
 ) : DslPropSchema {
     override val propTypeName: TypeName = kpMapOf(mapKeyType, mapValueType, nullable = true)
     override val iterableType: DslPropSchema.IterableType = DslPropSchema.IterableType.MAP
@@ -27,7 +26,7 @@ class MapGroupPropSchema(
 
     override fun toPropertySpec(): PropertySpec = kotlinPoet {
         property {
-            private()
+            protected()
             variable()
             name = propName
             type(propTypeName)

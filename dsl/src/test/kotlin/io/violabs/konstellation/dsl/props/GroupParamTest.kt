@@ -19,7 +19,7 @@ class GroupParamTest : UnitSim() {
             val param = GroupPropSchema("test", propTypeName, groupBuilderName)
 
             expect {
-                "private var test: kotlin.collections.List<test.TestObj>? = null"
+                "protected var test: kotlin.collections.List<test.TestObj>? = null"
             }
 
             whenever {

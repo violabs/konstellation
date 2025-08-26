@@ -4,7 +4,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeName
 import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
-import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
+import io.violabs.konstellation.metaDsl.annotation.MapGroupType
 
 /**
  * Adapter for property schema factory, providing details about a property in the DSL.
@@ -37,7 +37,7 @@ interface PropertySchemaFactoryAdapter {
      * as well as the group type of the map.
      */
     interface MapDetails {
-        val mapGroupType: GeneratedDsl.MapGroupType
+        val mapGroupType: MapGroupType
         val keyType: TypeName
         val valueType: TypeName
 

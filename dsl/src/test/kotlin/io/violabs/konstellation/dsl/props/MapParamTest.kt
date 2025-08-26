@@ -13,7 +13,7 @@ class MapParamTest : UnitSim() {
         given {
             val param = MapPropSchema("test", STRING, INT)
 
-            expect { "private var test: kotlin.collections.Map<kotlin.String, kotlin.Int>? = null" }
+            expect { "protected var test: kotlin.collections.Map<kotlin.String, kotlin.Int>? = null" }
 
             whenever {
                 val propSpec = param.toPropertySpec()

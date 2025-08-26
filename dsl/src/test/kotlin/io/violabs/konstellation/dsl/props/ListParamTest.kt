@@ -12,7 +12,7 @@ class ListParamTest : UnitSim() {
         given {
             val param = ListPropSchema("test", STRING)
 
-            expect { "private var test: kotlin.collections.List<kotlin.String>? = null" }
+            expect { "protected var test: kotlin.collections.List<kotlin.String>? = null" }
 
             whenever {
                 val propSpec = param.toPropertySpec()

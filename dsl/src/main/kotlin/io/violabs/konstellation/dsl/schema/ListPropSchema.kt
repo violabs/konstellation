@@ -24,7 +24,7 @@ class ListPropSchema(
 
     override fun toPropertySpec(): PropertySpec = kotlinPoet {
         property {
-            private()
+            protected()
             variable()
             name = propName
             type(propTypeName)

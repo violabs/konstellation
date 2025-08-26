@@ -55,7 +55,7 @@ class ParameterFactoryTest : UnitSim() {
 
             expect {
                 TestResponse(
-                    "private var test: kotlin.collections.List<test.Example>? = null\n",
+                    "protected var test: kotlin.collections.List<test.Example>? = null\n",
                     """
                         |public fun test(block: test.ExampleDslBuilder.Group.() -> kotlin.Unit) {
                         |  this.test = test.ExampleDslBuilder.Group().apply(block).items()

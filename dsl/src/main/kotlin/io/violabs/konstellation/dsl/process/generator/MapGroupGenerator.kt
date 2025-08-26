@@ -4,6 +4,7 @@ import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 import io.violabs.konstellation.dsl.builder.AnnotationDecorator
 import io.violabs.konstellation.dsl.builder.kpMapOf
 import io.violabs.konstellation.dsl.builder.kpMutableMapOf
+import io.violabs.konstellation.metaDsl.annotation.MapGroupType
 
 /**
  * Generator config for a DSL group that represents a map of items.
@@ -16,7 +17,7 @@ private val MAP_GROUP_GENERATOR_CONFIG = GroupGenerator.Config(
         itemsReturn = "return items.toMap()",
         builderAdd = "items[key] = %T().apply(block).build()"
     ), { argument ->
-        val activeTypes = GeneratedDsl.MapGroupType.ACTIVE_TYPES.map { it?.name }
+        val activeTypes = MapGroupType.ACTIVE_TYPES.map { it?.name }
         argument.value?.toString() in activeTypes
     }, propertyTypeAssigner = { typeVar, className ->
         val typeVariable = requireNotNull(typeVar) { "Parameterized Type required for MapGroup" }

@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
+import io.violabs.konstellation.metaDsl.annotation.MapGroupType
 import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
 
 /**
@@ -101,13 +102,13 @@ class DefaultPropertySchemaFactoryAdapter(
         ?.filter { it.shortName.asString() == GeneratedDsl::class.simpleName }
         ?.toList()
 
-    private fun mapGroupType(): GeneratedDsl.MapGroupType? {
+    private fun mapGroupType(): MapGroupType? {
         val arguments = dslAnnotations?.flatMap(KSAnnotation::arguments)
         val mapGroup = arguments
             ?.firstOrNull { it.name?.asString() == GeneratedDsl::withMapGroup.name }
             ?: return null
 
-        return GeneratedDsl.MapGroupType.valueOf(mapGroup.value.toString().uppercase())
+        return MapGroupType.valueOf(mapGroup.value.toString().uppercase())
     }
 
     override var mapDetails: PropertySchemaFactoryAdapter.MapDetails? = null
@@ -142,7 +143,7 @@ class DefaultPropertySchemaFactoryAdapter(
      * @property valueType The type of the values in the map.
      */
     class MapDetails(
-        override val mapGroupType: GeneratedDsl.MapGroupType = GeneratedDsl.MapGroupType.SINGLE,
+        override val mapGroupType: MapGroupType = MapGroupType.SINGLE,
         override val keyType: TypeName,
         override val valueType: TypeName
     ) : PropertySchemaFactoryAdapter.MapDetails

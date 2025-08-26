@@ -15,7 +15,6 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 import io.violabs.konstellation.dsl.domain.DomainProperty
 import io.violabs.konstellation.dsl.schema.BooleanPropSchema
@@ -28,6 +27,7 @@ import io.violabs.konstellation.dsl.schema.MapGroupPropSchema
 import io.violabs.konstellation.dsl.schema.MapPropSchema
 import io.violabs.konstellation.dsl.schema.SingleTransformPropSchema
 import io.violabs.konstellation.dsl.utils.VLoggable
+import io.violabs.konstellation.metaDsl.annotation.MapGroupType
 import kotlin.collections.contains
 import kotlin.reflect.KClass
 
@@ -115,8 +115,8 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
 
             checkCollectionType(adapter, MAP, Map::class) -> {
                 logger.debug("[CHOICE] map branch", tier = 4, branch = branch)
-                val mapGroupType: GeneratedDsl.MapGroupType? = adapter.mapDetails()?.mapGroupType
-                if (mapGroupType in GeneratedDsl.MapGroupType.ACTIVE_TYPES) {
+                val mapGroupType: MapGroupType? = adapter.mapDetails()?.mapGroupType
+                if (mapGroupType in MapGroupType.ACTIVE_TYPES) {
                     logger.debug("[DECISION] build MapGroupProp", tier = 4, branch = branch)
                     createMapGroupProp(adapter)
                 } else {
