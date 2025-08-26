@@ -227,8 +227,7 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
             adapter.propName,
             adapter.actualPropTypeName,
             groupElementClassName,
-            adapter.hasNullableAssignment,
-            kdoc = kdoc
+            adapter.hasNullableAssignment
         )
     }
 
@@ -240,8 +239,7 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
             adapter.propName,
             mapDetails.keyType,
             mapDetails.valueType,
-            adapter.hasNullableAssignment,
-            kdoc = kdoc
+            adapter.hasNullableAssignment
         )
     }
 
