@@ -121,7 +121,7 @@ abstract class GroupGenerator<T>(
                 }
                 properties {
                     add {
-                        private()
+                        protected()
                         name = "items"
                         type(config.propertyTypeAssigner(typeVariable, domainClassName))
                         initializer(config.templates.prop)

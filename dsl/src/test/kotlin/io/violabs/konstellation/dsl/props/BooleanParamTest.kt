@@ -11,7 +11,7 @@ class BooleanParamTest : UnitSim() {
         given {
             val param = BooleanPropSchema("test")
 
-            expect { "private var test: kotlin.Boolean? = null" }
+            expect { "protected var test: kotlin.Boolean? = null" }
 
             whenever {
                 val propSpec = param.toPropertySpec()

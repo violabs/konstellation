@@ -22,7 +22,7 @@ class SingleTransformParamTest : UnitSim() {
                 propTypeName,
             )
 
-            expect { "private var test: $testResponseClassName? = null" }
+            expect { "protected var test: $testResponseClassName? = null" }
 
             whenever {
                 val propSpec = param.toPropertySpec()

@@ -12,7 +12,6 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.ksp.writeTo
-import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 import io.violabs.konstellation.dsl.builder.AnnotationDecorator
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 import io.violabs.konstellation.dsl.domain.BuilderConfig
@@ -23,6 +22,7 @@ import io.violabs.konstellation.dsl.schema.DslPropSchema
 import io.violabs.konstellation.dsl.utils.VLoggable
 import io.violabs.konstellation.dsl.utils.isGroupDsl
 import io.violabs.konstellation.dsl.utils.mapGroupType
+import io.violabs.konstellation.metaDsl.annotation.MapGroupType
 
 /** * Interface for generating DSL builders.
  * This interface defines the contract for generating DSL builder files based on domain configurations.
@@ -97,7 +97,7 @@ class DefaultBuilderGenerator(
         val typeAliasNames: MutableList<String> = mutableListOf(builderScopeTypeAlias)
 
         val hasGroup = domainConfig.domain.isGroupDsl()
-        val hasMapGroup = domainConfig.domain.mapGroupType() in GeneratedDsl.MapGroupType.ACTIVE_TYPES
+        val hasMapGroup = domainConfig.domain.mapGroupType() in MapGroupType.ACTIVE_TYPES
 
         if (hasGroup) typeAliasNames.add("${builderScopeTypeAlias}.Group")
         if (hasMapGroup) typeAliasNames.add("${builderScopeTypeAlias}.MapGroup")

@@ -3,6 +3,7 @@ package io.violabs.konstellation.dsl.utils
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
+import io.violabs.konstellation.metaDsl.annotation.MapGroupType
 
 /**
  * Extension functions for [KSClassDeclaration] to check if it is a DSL class
@@ -21,8 +22,8 @@ fun KSClassDeclaration?.isGroupDsl(): Boolean = this?.annotations
 /**
  * Extension function to retrieve the group type from the annotations of a [KSClassDeclaration].
  */
-fun KSClassDeclaration?.mapGroupType(): GeneratedDsl.MapGroupType? = this?.annotations
+fun KSClassDeclaration?.mapGroupType(): MapGroupType? = this?.annotations
     ?.filter { it.shortName.asString() == GeneratedDsl::class.simpleName }
     ?.flatMap(KSAnnotation::arguments)
     ?.firstOrNull { it.name?.asString() == GeneratedDsl::withMapGroup.name }
-    ?.let { GeneratedDsl.MapGroupType.valueOf(it.value.toString().uppercase()) }
+    ?.let { MapGroupType.valueOf(it.value.toString().uppercase()) }

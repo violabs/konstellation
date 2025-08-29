@@ -18,7 +18,7 @@ interface DslPropSchema {
     val verifyNotNull: Boolean get() = true
     val verifyNotEmpty: Boolean get() = false
     val iterableType: IterableType? get() = null
-    val accessModifier: KModifier get() = KModifier.PRIVATE
+    val accessModifier: KModifier get() = KModifier.PROTECTED
     val defaultValue: DefaultPropertyValue? get() = null
 
     fun isCollection(): Boolean = iterableType == IterableType.COLLECTION
