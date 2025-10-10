@@ -7,13 +7,12 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 import io.violabs.konstellation.dsl.domain.BuilderConfig
-import io.violabs.konstellation.dsl.process.DslFileWriter
 import io.violabs.konstellation.dsl.utils.VLoggable
 
 /**
  * Interface for generating the root DSL accessor.
  */
-interface RootDslAccessorGenerator : DslFileWriter, VLoggable {
+interface RootDslAccessorGenerator : VLoggable {
     override fun logId(): String? = RootDslAccessorGenerator::class.simpleName
 
     fun generate(

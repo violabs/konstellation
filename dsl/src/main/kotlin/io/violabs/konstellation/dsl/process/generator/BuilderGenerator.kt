@@ -16,7 +16,6 @@ import io.violabs.konstellation.dsl.builder.AnnotationDecorator
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 import io.violabs.konstellation.dsl.domain.BuilderConfig
 import io.violabs.konstellation.dsl.domain.DomainConfig
-import io.violabs.konstellation.dsl.process.DslFileWriter
 import io.violabs.konstellation.dsl.process.propSchema.DefaultPropertySchemaService
 import io.violabs.konstellation.dsl.schema.DslPropSchema
 import io.violabs.konstellation.dsl.utils.VLoggable
@@ -27,7 +26,7 @@ import io.violabs.konstellation.metaDsl.annotation.MapGroupType
 /** * Interface for generating DSL builders.
  * This interface defines the contract for generating DSL builder files based on domain configurations.
  */
-interface BuilderGenerator : DslFileWriter, VLoggable {
+interface BuilderGenerator : VLoggable {
     override fun logId(): String? = BuilderGenerator::class.simpleName
 
     /**

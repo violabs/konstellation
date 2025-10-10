@@ -13,18 +13,6 @@ interface ParamSpecEnabled {
     var params: MutableList<ParameterSpec>
 
     /**
-     * Adds a group of parameters to the DSL element.
-     * available accessors:
-     * - [KPParameterSpecBuilder.Group.items]
-     * - [KPParameterSpecBuilder.Group.param]
-     *
-     * @param block A lambda that configures the [KPParameterSpecBuilder.Group].
-     */
-    fun params(block: KPParameterSpecBuilder.Group.() -> Unit) {
-        params = KPParameterSpecBuilder.Group().apply(block).items
-    }
-
-    /**
      * Adds a parameter to the list of parameters.
      * Available accessors:
      * - [KPParameterSpecBuilder.defaultValue]
