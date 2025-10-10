@@ -10,3 +10,4 @@ secret.properties
 jreleaser_public.asc
 public.key
 
+.ai/ignore/*

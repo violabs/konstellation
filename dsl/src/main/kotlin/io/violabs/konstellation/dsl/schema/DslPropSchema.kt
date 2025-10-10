@@ -20,6 +20,7 @@ interface DslPropSchema {
     val iterableType: IterableType? get() = null
     val accessModifier: KModifier get() = KModifier.PROTECTED
     val defaultValue: DefaultPropertyValue? get() = null
+    val kdoc: String? get() = null
 
     fun isCollection(): Boolean = iterableType == IterableType.COLLECTION
     fun isMap(): Boolean = iterableType == IterableType.MAP

@@ -1,19 +1,10 @@
 package io.violabs.konstellation.dsl.process.propSchema
 
-import com.squareup.kotlinpoet.CHAR
-import com.squareup.kotlinpoet.STRING
-import com.squareup.kotlinpoet.BYTE
-import com.squareup.kotlinpoet.SHORT
-import com.squareup.kotlinpoet.INT
-import com.squareup.kotlinpoet.LONG
-import com.squareup.kotlinpoet.DOUBLE
-import com.squareup.kotlinpoet.FLOAT
-import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.MAP
 import com.squareup.kotlinpoet.LIST
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 import io.violabs.konstellation.dsl.domain.DomainProperty
@@ -27,14 +18,6 @@ import io.violabs.konstellation.dsl.schema.MapGroupPropSchema
 import io.violabs.konstellation.dsl.schema.MapPropSchema
 import io.violabs.konstellation.dsl.schema.SingleTransformPropSchema
 import io.violabs.konstellation.dsl.utils.VLoggable
-import io.violabs.konstellation.metaDsl.annotation.MapGroupType
-import kotlin.collections.contains
-import kotlin.reflect.KClass
-
-
-private val DEFAULT_TYPE_NAMES = listOf(
-    CHAR, STRING, BYTE, SHORT, INT, LONG, DOUBLE, FLOAT
-)
 
 /**
  * Responsible for creating [DslPropSchema] instances for a given property adapter.
@@ -95,50 +78,51 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         val propName = adapter.propName
         val actualPropertyType: TypeName = adapter.actualPropTypeName
         val isNullable = actualPropertyType.isNullable
-        val nonNullPropType = adapter.nonNullablePropTypeName()
-
         val branch = !isLast
 
         logger.debug("mapping '$propName'", tier = 3, branch = branch)
         logger.debug("nullable: $isNullable", tier = 4, branch = branch)
 
-        return getAnnotated(adapter, branch) ?: when {
-            BOOLEAN == nonNullPropType -> {
+        return when (PropertyKindResolver.resolve(adapter)) {
+            ResolvedPropKind.SINGLE_TRANSFORM -> {
+                buildSingleTransformProp(adapter, branch)
+            }
+            ResolvedPropKind.BUILDER -> {
+                logger.debug("BuilderProp", tier = 4, branch = branch)
+                createBuilderProp(adapter)
+            }
+            ResolvedPropKind.BOOLEAN_DEFAULT -> {
                 logger.debug("BooleanProp", tier = 4, branch = branch)
                 BooleanPropSchema(propName, isNullable, adapter.defaultValue)
             }
-
-            DEFAULT_TYPE_NAMES.contains(nonNullPropType) -> {
+            ResolvedPropKind.DEFAULT_PRIMITIVE -> {
                 logger.debug("DefaultProp", tier = 4, branch = branch)
                 DefaultPropSchema(propName, actualPropertyType, isNullable, adapter.defaultValue)
             }
-
-            checkCollectionType(adapter, MAP, Map::class) -> {
+            ResolvedPropKind.MAP_GROUP -> {
                 logger.debug("[CHOICE] map branch", tier = 4, branch = branch)
-                val mapGroupType: MapGroupType? = adapter.mapDetails()?.mapGroupType
-                if (mapGroupType in MapGroupType.ACTIVE_TYPES) {
-                    logger.debug("[DECISION] build MapGroupProp", tier = 4, branch = branch)
-                    createMapGroupProp(adapter)
-                } else {
-                    logger.debug("[DECISION] build MapProp", tier = 4, branch = branch)
-                    createMapProp(adapter)
-                }
+                logger.debug("[DECISION] build MapGroupProp", tier = 4, branch = branch)
+                createMapGroupProp(adapter)
             }
-
-            checkCollectionType(adapter, LIST, List::class) -> {
+            ResolvedPropKind.MAP -> {
+                logger.debug("[CHOICE] map branch", tier = 4, branch = branch)
+                logger.debug("[DECISION] build MapProp", tier = 4, branch = branch)
+                createMapProp(adapter)
+            }
+            ResolvedPropKind.LIST_GROUP -> {
                 logger.debug("[CHOICE] list branch", tier = 4, branch = branch)
-                if (adapter.isGroupElement) {
-                    logger.debug("[DECISION] build GroupProp", tier = 4, branch = branch)
-                    createGroupProp(adapter)
-                } else {
-                    logger.debug("[DECISION] build ListProp", tier = 4, branch = branch)
-                    createListProp(adapter)
-                }
+                logger.debug("[DECISION] build GroupProp", tier = 4, branch = branch)
+                createGroupProp(adapter)
             }
-
-            else -> {
-                logger.warn("Property '$propName' of type '${actualPropertyType}' " +
-                    "could not be mapped to a known DSLParam type. Using DefaultParam as a fallback.")
+            ResolvedPropKind.LIST -> {
+                logger.debug("[CHOICE] list branch", tier = 4, branch = branch)
+                logger.debug("[DECISION] build ListProp", tier = 4, branch = branch)
+                createListProp(adapter)
+            }
+            ResolvedPropKind.DEFAULT_FALLBACK -> {
+                logger.warn(
+                    "Property '$propName' of type '${actualPropertyType}' could not be mapped to a known DSLParam type. Using DefaultParam as a fallback."
+                )
                 val param = DefaultPropSchema(propName, actualPropertyType, isNullable, adapter.defaultValue)
                 logger.debug("-> DefaultProp (fallback)", tier = 4, branch = branch)
                 param
@@ -146,33 +130,7 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         }
     }
 
-    private fun getAnnotated(adapter: T, branch: Boolean): DslPropSchema? {
-        if (adapter.hasSingleEntryTransform) {
-            return buildSingleTransformProp(adapter, branch)
-        }
-
-        val propertyNonNullableClassName: ClassName? = adapter.propertyNonNullableClassName
-        val hasGeneratedDSLAnnotation = adapter.hasGeneratedDslAnnotation
-
-        return if (hasGeneratedDSLAnnotation && propertyNonNullableClassName != null) {
-            logger.debug("BuilderProp", tier = 4, branch = branch)
-            createBuilderProp(adapter)
-        } else {
-            null
-        }
-    }
-
-    private fun checkCollectionType(
-        adapter: T,
-        expectedType: TypeName,
-        expectedClass: KClass<*>
-    ): Boolean {
-        val nonNullPropType = adapter.nonNullablePropTypeName()
-        val isRawCollection = nonNullPropType is ParameterizedTypeName && nonNullPropType.rawType == expectedType
-        val isQualifiedCollection = adapter.propertyClassDeclarationQualifiedName == expectedClass.qualifiedName
-
-        return isRawCollection || isQualifiedCollection
-    }
+    // Collection type and annotation checks moved into PropertyKindResolver
 
     private fun buildSingleTransformProp(
         adapter: PropertySchemaFactoryAdapter,
@@ -224,10 +182,10 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         )
         val kdoc = builderDoc(builderClassName, adapter.groupElementClassDeclaration)
         return GroupPropSchema(
-            adapter.propName,
-            adapter.actualPropTypeName,
-            groupElementClassName,
-            adapter.hasNullableAssignment
+            propName = adapter.propName,
+            builtClassName = groupElementClassName,
+            nullableAssignment = adapter.hasNullableAssignment,
+            kdoc = kdoc
         )
     }
 
@@ -239,7 +197,8 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
             adapter.propName,
             mapDetails.keyType,
             mapDetails.valueType,
-            adapter.hasNullableAssignment
+            adapter.hasNullableAssignment,
+            kdoc = kdoc
         )
     }
 
