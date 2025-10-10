@@ -16,6 +16,7 @@ import io.violabs.konstellation.dsl.builder.AnnotationDecorator
 import io.violabs.konstellation.dsl.builder.kotlinPoet
 import io.violabs.konstellation.dsl.domain.BuilderConfig
 import io.violabs.konstellation.dsl.domain.DomainConfig
+import io.violabs.konstellation.dsl.process.ValidationAnalyzer
 import io.violabs.konstellation.dsl.process.propSchema.DefaultPropertySchemaService
 import io.violabs.konstellation.dsl.schema.DslPropSchema
 import io.violabs.konstellation.dsl.utils.VLoggable
@@ -226,31 +227,20 @@ class DefaultBuilderGenerator(
         typeAliases: List<TypeAliasSpec>,
         builderContent: TypeSpec
     ): FileSpec {
-        val hasRequireNotNull = schemas.any { param -> !param.nullableAssignment && param.verifyNotNull }
-        val hasCollectionRequireNotEmpty = schemas.any { param ->
-            !param.nullableAssignment && param.verifyNotEmpty && param.isCollection()
-        }
-        val hasMapRequireNotEmpty = schemas.any { param ->
-            !param.nullableAssignment && param.verifyNotEmpty && param.isMap()
-        }
-        logger.debug("requiresNotNull: $hasRequireNotNull", tier = 1, branch = true)
-        logger.debug("requireCollectionNotEmpty: $hasCollectionRequireNotEmpty", tier = 1, branch = true)
-        logger.debug("requireMapNotEmpty: $hasMapRequireNotEmpty", tier = 1, branch = true)
-
-        val defaultValueImports: Set<String> = schemas
-            .mapNotNull { it.defaultValue?.importString() }
-            .toSet()
-
-        logger.debug("defaultValueImports: $defaultValueImports", tier = 1, branch = true)
+        val analysis = ValidationAnalyzer.analyze(schemas)
+        logger.debug("requiresNotNull: ${analysis.requiresNotNull}", tier = 1, branch = true)
+        logger.debug("requireCollectionNotEmpty: ${analysis.requiresCollectionNotEmpty}", tier = 1, branch = true)
+        logger.debug("requireMapNotEmpty: ${analysis.requiresMapNotEmpty}", tier = 1, branch = true)
+        logger.debug("defaultValueImports: ${analysis.defaultValueImports}", tier = 1, branch = true)
 
         return kotlinPoet {
             file {
-                addImportIf(hasRequireNotNull, "io.violabs.konstellation.metaDsl", "vRequireNotNull")
+                addImportIf(analysis.requiresNotNull, "io.violabs.konstellation.metaDsl", "vRequireNotNull")
                 addImportIf(
-                    hasCollectionRequireNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireCollectionNotEmpty"
+                    analysis.requiresCollectionNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireCollectionNotEmpty"
                 )
-                addImportIf(hasMapRequireNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireMapNotEmpty")
-                defaultValueImports.forEach {
+                addImportIf(analysis.requiresMapNotEmpty, "io.violabs.konstellation.metaDsl", "vRequireMapNotEmpty")
+                analysis.defaultValueImports.forEach {
                     addImport(it)
                 }
                 className = domainConfig.fileClassName
