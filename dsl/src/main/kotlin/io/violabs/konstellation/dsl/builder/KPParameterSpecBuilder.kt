@@ -1,11 +1,10 @@
 package io.violabs.konstellation.dsl.builder
 
-import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeName
 
 /**
- * A builder for creating Kotlin Poets [ParameterSpec].
+ * A builder for creating KotlinPoet [ParameterSpec].
  */
 @PicardDSLMarker
 class KPParameterSpecBuilder : TypedSpec, DefaultKotlinPoetSpec() {
@@ -43,46 +42,5 @@ class KPParameterSpecBuilder : TypedSpec, DefaultKotlinPoetSpec() {
         return spec.build()
     }
 
-    /**
-     * A group of parameters that can be added to a DSL element.
-     */
-    class Group {
-        val items: MutableList<ParameterSpec> = mutableListOf()
-
-        /**
-         * Adds a parameter to the list using a block to configure the [KPParameterSpecBuilder].
-         * available accessors:
-         * - [KPParameterSpecBuilder.defaultValue]
-         * - [KPParameterSpecBuilder.type]
-         *
-         * @param block A lambda that configures the [KPParameterSpecBuilder] to create a [ParameterSpec].
-         */
-        fun param(
-            block: KPParameterSpecBuilder.() -> Unit
-        ): ParameterSpec {
-            return KPParameterSpecBuilder().apply(block).build()
-        }
-
-        /**
-         * Adds a [KPParameterSpecBuilder] to the list.
-         * available accessors:
-         * - [KPParameterSpecBuilder.defaultValue]
-         * - [KPParameterSpecBuilder.type]
-         *
-         * @param block The [ParameterSpec] to be added to the list.
-         */
-        fun varargParam(
-            block: KPParameterSpecBuilder.() -> Unit
-        ): ParameterSpec {
-            return KPParameterSpecBuilder()
-                .apply {
-                    name = "items"
-                }
-                .apply(block)
-                .apply {
-                    modifiers.add(KModifier.VARARG)
-                }
-                .build()
-        }
-    }
+    // Note: Parameter grouping utilities were removed to reduce API surface.
 }
