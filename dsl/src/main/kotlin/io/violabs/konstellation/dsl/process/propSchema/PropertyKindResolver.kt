@@ -14,6 +14,7 @@ import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.BYTE
 import com.squareup.kotlinpoet.ClassName
+import io.violabs.konstellation.metaDsl.annotation.MapGroupType
 import kotlin.reflect.KClass
 
 /**
@@ -35,6 +36,7 @@ enum class ResolvedPropKind {
 object PropertyKindResolver {
     private val defaultTypeNames = setOf(CHAR, STRING, BYTE, SHORT, INT, LONG, DOUBLE, FLOAT)
 
+    @Suppress("ReturnCount")
     fun <T : PropertySchemaFactoryAdapter> resolve(adapter: T): ResolvedPropKind {
         // Annotations-based shortcuts take precedence
         if (adapter.hasSingleEntryTransform) return ResolvedPropKind.SINGLE_TRANSFORM
@@ -56,7 +58,7 @@ object PropertyKindResolver {
         // Collections
         if (isCollectionType(adapter, MAP, Map::class)) {
             val mapDetails = adapter.mapDetails()
-            return if (mapDetails?.mapGroupType in io.violabs.konstellation.metaDsl.annotation.MapGroupType.ACTIVE_TYPES) {
+            return if (mapDetails?.mapGroupType in MapGroupType.ACTIVE_TYPES) {
                 ResolvedPropKind.MAP_GROUP
             } else {
                 ResolvedPropKind.MAP

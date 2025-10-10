@@ -121,7 +121,8 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
             }
             ResolvedPropKind.DEFAULT_FALLBACK -> {
                 logger.warn(
-                    "Property '$propName' of type '${actualPropertyType}' could not be mapped to a known DSLParam type. Using DefaultParam as a fallback."
+                    "Property '$propName' of type '${actualPropertyType}' " +
+                        "could not be mapped to a known DSLParam type. Using DefaultParam as a fallback."
                 )
                 val param = DefaultPropSchema(propName, actualPropertyType, isNullable, adapter.defaultValue)
                 logger.debug("-> DefaultProp (fallback)", tier = 4, branch = branch)
