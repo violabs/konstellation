@@ -60,23 +60,23 @@ class MapPropSchema(
                 }
             }
 
-            // Provider function: areaCodes(provider: (MutableMap<String, String>) -> Unit)
+            // Provider function: areaCodes(block: MutableMap<String, String>.() -> Unit)
             if (withProvider) {
                 add {
                     funName = functionName
                     param {
-                        name = "provider"
+                        name = "block"
                         lambdaType {
-                            param {
-                                name = "items"
-                                type(kpMutableMapOf(mapKeyType, mapValueType, nullable = false))
-                            }
+                            receiver = kpMutableMapOf(mapKeyType, mapValueType, nullable = false)
                         }
                     }
                     statements {
-                        addLine("val items = mutableMapOf<%T, %T>()", mapKeyType, mapValueType)
-                        addLine("provider(items)")
-                        addLine("this.%N = items.toMap()", propName)
+                        addLine(
+                            "this.%N = mutableMapOf<%T, %T>().apply(block).toMap()",
+                            propName,
+                            mapKeyType,
+                            mapValueType
+                        )
                     }
                 }
             }

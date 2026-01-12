@@ -57,23 +57,18 @@ class ListPropSchema(
                 }
             }
 
-            // Provider function: names(provider: (MutableList<String>) -> Unit)
+            // Provider function: names(block: MutableList<String>.() -> Unit)
             if (withProvider) {
                 add {
                     funName = functionName
                     param {
-                        name = "provider"
+                        name = "block"
                         lambdaType {
-                            param {
-                                name = "items"
-                                type(kpMutableListOf(collectionType, nullable = false))
-                            }
+                            receiver = kpMutableListOf(collectionType, nullable = false)
                         }
                     }
                     statements {
-                        addLine("val items = mutableListOf<%T>()", collectionType)
-                        addLine("provider(items)")
-                        addLine("this.%N = items.toList()", propName)
+                        addLine("this.%N = mutableListOf<%T>().apply(block).toList()", propName, collectionType)
                     }
                 }
             }

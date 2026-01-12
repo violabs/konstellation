@@ -219,13 +219,13 @@ class GenerateTest : UnitSim() {
                 )
             }
 
-            // Test provider function - receives MutableList to populate
+            // Test provider function - uses receiver syntax (MutableList.() -> Unit)
             whenever {
                 starShip {
                     name = starShipName
                     commanderNames(rikerName)
                     crewMap { passenger(Passenger.Rank.CAPTAIN.name) { name = picardName; rank = Passenger.Rank.CAPTAIN } }
-                    aliases { items -> items.addAll(listOf("NCC-1701-D", "Enterprise-D", "Flagship")) }
+                    aliases { addAll(listOf("NCC-1701-D", "Enterprise-D", "Flagship")) }
                 }
             }
         }
@@ -271,13 +271,16 @@ class GenerateTest : UnitSim() {
                 )
             }
 
-            // Test provider function (vararg should not exist) - receives MutableMap to populate
+            // Test provider function (vararg should not exist) - uses receiver syntax (MutableMap.() -> Unit)
             whenever {
                 starShip {
                     name = starShipName
                     commanderNames(rikerName)
                     crewMap { passenger(Passenger.Rank.CAPTAIN.name) { name = picardName; rank = Passenger.Rank.CAPTAIN } }
-                    metadata { items -> items.putAll(mapOf("class" to "Galaxy", "registry" to "NCC-1701-D")) }
+                    metadata { 
+                        this["class"] = "Galaxy"
+                        this["registry"] = "NCC-1701-D"
+                    }
                 }
             }
         }
@@ -332,12 +335,15 @@ class GenerateTest : UnitSim() {
                     name = starShipName
                     commanderNames(rikerName, crusherName)
                     crewMap { passenger(Passenger.Rank.CAPTAIN.name) { name = picardName; rank = Passenger.Rank.CAPTAIN } }
-                    // Using provider function (default config) - receives MutableList
-                    aliases { items -> items.addAll(listOf("Enterprise", "Flagship")) }
+                    // Using provider function (default config) - receiver syntax MutableList.() -> Unit
+                    aliases { addAll(listOf("Enterprise", "Flagship")) }
                     // Using vararg function (withProvider=false)
                     tags("starfleet", "exploration")
-                    // Using provider function (withVararg=false) - receives MutableMap
-                    metadata { items -> items.putAll(mapOf("sector" to "001", "quadrant" to "Alpha")) }
+                    // Using provider function (withVararg=false) - receiver syntax MutableMap.() -> Unit
+                    metadata { 
+                        this["sector"] = "001"
+                        this["quadrant"] = "Alpha"
+                    }
                 }
             }
         }
