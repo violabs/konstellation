@@ -176,4 +176,176 @@ class GenerateTest : UnitSim() {
             }
         }
     }
+
+    // ========== @DslProperty Tests ==========
+
+    @Test
+    fun `DslProperty - default generates both vararg and provider for lists`() = test {
+        given {
+            val expectedAliases = listOf("NCC-1701-D", "Enterprise-D", "Flagship")
+
+            expect {
+                StarShip(
+                    name = starShipName,
+                    commanderNames = listOf(rikerName),
+                    crewMap = mapOf(Passenger.Rank.CAPTAIN.name to picard),
+                    aliases = expectedAliases
+                )
+            }
+
+            // Test vararg function
+            whenever {
+                starShip {
+                    name = starShipName
+                    commanderNames(rikerName)
+                    crewMap { passenger(Passenger.Rank.CAPTAIN.name) { name = picardName; rank = Passenger.Rank.CAPTAIN } }
+                    aliases("NCC-1701-D", "Enterprise-D", "Flagship")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `DslProperty - default generates provider function for lists`() = test {
+        given {
+            val expectedAliases = listOf("NCC-1701-D", "Enterprise-D", "Flagship")
+
+            expect {
+                StarShip(
+                    name = starShipName,
+                    commanderNames = listOf(rikerName),
+                    crewMap = mapOf(Passenger.Rank.CAPTAIN.name to picard),
+                    aliases = expectedAliases
+                )
+            }
+
+            // Test provider function - uses receiver syntax (MutableList.() -> Unit)
+            whenever {
+                starShip {
+                    name = starShipName
+                    commanderNames(rikerName)
+                    crewMap { passenger(Passenger.Rank.CAPTAIN.name) { name = picardName; rank = Passenger.Rank.CAPTAIN } }
+                    aliases { addAll(listOf("NCC-1701-D", "Enterprise-D", "Flagship")) }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `DslProperty - withProvider false generates only vararg function`() = test {
+        given {
+            val expectedTags = listOf("federation", "flagship", "galaxy-class")
+
+            expect {
+                StarShip(
+                    name = starShipName,
+                    commanderNames = listOf(rikerName),
+                    crewMap = mapOf(Passenger.Rank.CAPTAIN.name to picard),
+                    tags = expectedTags
+                )
+            }
+
+            // Test vararg function (provider should not exist)
+            whenever {
+                starShip {
+                    name = starShipName
+                    commanderNames(rikerName)
+                    crewMap { passenger(Passenger.Rank.CAPTAIN.name) { name = picardName; rank = Passenger.Rank.CAPTAIN } }
+                    tags("federation", "flagship", "galaxy-class")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `DslProperty - withVararg false generates only provider function for maps`() = test {
+        given {
+            val expectedMetadata = mapOf("class" to "Galaxy", "registry" to "NCC-1701-D")
+
+            expect {
+                StarShip(
+                    name = starShipName,
+                    commanderNames = listOf(rikerName),
+                    crewMap = mapOf(Passenger.Rank.CAPTAIN.name to picard),
+                    metadata = expectedMetadata
+                )
+            }
+
+            // Test provider function (vararg should not exist) - uses receiver syntax (MutableMap.() -> Unit)
+            whenever {
+                starShip {
+                    name = starShipName
+                    commanderNames(rikerName)
+                    crewMap { passenger(Passenger.Rank.CAPTAIN.name) { name = picardName; rank = Passenger.Rank.CAPTAIN } }
+                    metadata { 
+                        this["class"] = "Galaxy"
+                        this["registry"] = "NCC-1701-D"
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `DslProperty - both false requires direct property assignment`() = test {
+        given {
+            // When both withVararg and withProvider are false, no accessor functions are generated
+            // The property can only be set via direct assignment (which requires access to protected member)
+            // or the property remains null
+            expect {
+                StarShip(
+                    name = starShipName,
+                    commanderNames = listOf(rikerName),
+                    crewMap = mapOf(Passenger.Rank.CAPTAIN.name to picard),
+                    systemCodes = null // No accessor functions means it stays null via DSL
+                )
+            }
+
+            whenever {
+                starShip {
+                    name = starShipName
+                    commanderNames(rikerName)
+                    crewMap { passenger(Passenger.Rank.CAPTAIN.name) { name = picardName; rank = Passenger.Rank.CAPTAIN } }
+                    // Note: systemCodes has no accessor functions (withVararg=false, withProvider=false)
+                    // so there's no way to set it via the DSL builder methods
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `DslProperty - combined usage with all configurations`() = test {
+        given {
+            expect {
+                StarShip(
+                    name = starShipName,
+                    commanderNames = listOf(rikerName, crusherName),
+                    crewMap = mapOf(Passenger.Rank.CAPTAIN.name to picard),
+                    // Default: using provider
+                    aliases = listOf("Enterprise", "Flagship"),
+                    // withProvider=false: using vararg
+                    tags = listOf("starfleet", "exploration"),
+                    // withVararg=false: using provider
+                    metadata = mapOf("sector" to "001", "quadrant" to "Alpha")
+                )
+            }
+
+            whenever {
+                starShip {
+                    name = starShipName
+                    commanderNames(rikerName, crusherName)
+                    crewMap { passenger(Passenger.Rank.CAPTAIN.name) { name = picardName; rank = Passenger.Rank.CAPTAIN } }
+                    // Using provider function (default config) - receiver syntax MutableList.() -> Unit
+                    aliases { addAll(listOf("Enterprise", "Flagship")) }
+                    // Using vararg function (withProvider=false)
+                    tags("starfleet", "exploration")
+                    // Using provider function (withVararg=false) - receiver syntax MutableMap.() -> Unit
+                    metadata { 
+                        this["sector"] = "001"
+                        this["quadrant"] = "Alpha"
+                    }
+                }
+            }
+        }
+    }
 }
