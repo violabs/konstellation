@@ -268,7 +268,14 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
             val valueType: TypeName = actualPropertyType.typeArguments.last()
             logger.debug("mapElementKey: $keyType", tier = 5)
             logger.debug("mapElementValue: $valueType", tier = 5)
-            return MapPropSchema(propName, keyType, valueType, adapter.hasNullableAssignment)
+            return MapPropSchema(
+                propName = propName,
+                mapKeyType = keyType,
+                mapValueType = valueType,
+                nullableAssignment = adapter.hasNullableAssignment,
+                withVararg = adapter.withVararg,
+                withProvider = adapter.withProvider
+            )
         }
 
         logger.warn(
@@ -288,7 +295,13 @@ abstract class AbstractPropertySchemaFactory<T : PropertySchemaFactoryAdapter, P
         if (actualPropertyType is ParameterizedTypeName && actualPropertyType.rawType == LIST) {
             val elementTypeArgument: TypeName = actualPropertyType.typeArguments.first()
             logger.debug("listElementType: $elementTypeArgument", tier = 5)
-            return ListPropSchema(propName, elementTypeArgument, adapter.hasNullableAssignment)
+            return ListPropSchema(
+                propName = propName,
+                collectionType = elementTypeArgument,
+                nullableAssignment = adapter.hasNullableAssignment,
+                withVararg = adapter.withVararg,
+                withProvider = adapter.withProvider
+            )
         }
 
         logger.warn(

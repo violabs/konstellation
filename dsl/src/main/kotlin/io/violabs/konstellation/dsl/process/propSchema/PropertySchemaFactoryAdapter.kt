@@ -27,6 +27,10 @@ interface PropertySchemaFactoryAdapter {
     val mapValueClassDeclaration: KSClassDeclaration?
     val defaultValue: DefaultPropertyValue?
 
+    // DSL property generation options
+    val withVararg: Boolean get() = true
+    val withProvider: Boolean get() = true
+
     fun mapDetails(): MapDetails? = null
 
     fun nonNullablePropTypeName(): TypeName = actualPropTypeName.copy(nullable = false)

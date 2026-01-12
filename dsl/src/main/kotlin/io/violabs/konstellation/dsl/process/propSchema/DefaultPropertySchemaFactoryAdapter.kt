@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import io.violabs.konstellation.dsl.domain.DefaultDomainProperty
 import io.violabs.konstellation.dsl.domain.DefaultPropertyValue
+import io.violabs.konstellation.metaDsl.annotation.DslProperty
 import io.violabs.konstellation.metaDsl.annotation.GeneratedDsl
 import io.violabs.konstellation.metaDsl.annotation.MapGroupType
 import io.violabs.konstellation.metaDsl.annotation.SingleEntryTransformDsl
@@ -28,6 +29,22 @@ class DefaultPropertySchemaFactoryAdapter(
     override val propName: String = prop.simpleName.asString()
     override val actualPropTypeName: TypeName = prop.type.toTypeName()
     override val hasSingleEntryTransform: Boolean = singleEntryTransform != null
+
+    // DslProperty annotation for controlling list/map accessor generation
+    private val dslPropertyAnnotation: KSAnnotation? = prop.annotations
+        .find { it.shortName.asString() == DslProperty::class.simpleName }
+
+    override val withVararg: Boolean = dslPropertyAnnotation
+        ?.arguments
+        ?.firstOrNull { it.name?.asString() == DslProperty::withVararg.name }
+        ?.value as? Boolean
+        ?: true
+
+    override val withProvider: Boolean = dslPropertyAnnotation
+        ?.arguments
+        ?.firstOrNull { it.name?.asString() == DslProperty::withProvider.name }
+        ?.value as? Boolean
+        ?: true
 
     constructor(propertyAdapter: DefaultDomainProperty) : this(
         propertyAdapter.prop,
